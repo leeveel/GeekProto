@@ -15,7 +15,9 @@ Super Fast Binary Serialization Library
 Dictionary的key只能为：基础类型和枚举
 
 ## 不支持列表： ##
-容器多层嵌套
+容器多层嵌套(实际开发中几乎用不上)
 
 复杂对象Key的Dictionary
+
+
   
