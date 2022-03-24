@@ -182,7 +182,7 @@ namespace Tool.Test
                 t4.Map.Add(i, i.ToString());
             }
 
-            int count = 1000;
+            int count = 100;
             System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
             watch.Start();
             for (int i = 0; i < count; i++)
