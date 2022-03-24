@@ -32,8 +32,6 @@ namespace Proto
 
 		}
 
-
-
 		
 		public override int Sid { get; set;} = 111102;
 
@@ -56,7 +54,12 @@ namespace Proto
 				if(_fieldNum_ > 0)
 				{
 
-					L1 = SerializeTool.Read_long(false,  _buffer_, ref _offset_);
+					//L1 = SerializeTool.Read_long(false,  _buffer_, ref _offset_);
+
+
+					L1 = XBuffer.ReadLong(_buffer_, ref _offset_);
+
+
 
 
 				}else break;
@@ -64,7 +67,11 @@ namespace Proto
 				{
 					
 					/*********************************************************/
-					SerializeTool.Read_string_Collection(L2, _buffer_, ref _offset_);
+					int count1 = XBuffer.ReadInt(_buffer_, ref _offset_);
+					for (int i = 0; i < count1; ++i)
+					{
+						L2.Add(XBuffer.ReadString(_buffer_, ref _offset_));
+					}
 					/*********************************************************/
 
 
@@ -73,7 +80,11 @@ namespace Proto
 				{
 					
 					/*********************************************************/
-					SerializeTool.Read_float_Collection(L3, _buffer_, ref _offset_);
+					int count2 = XBuffer.ReadInt(_buffer_, ref _offset_);
+					for (int i = 0; i < count2; ++i)
+					{
+						L3.Add(XBuffer.ReadFloat(_buffer_, ref _offset_));
+					}
 					/*********************************************************/
 
 
@@ -82,7 +93,19 @@ namespace Proto
 				{
 					
 					/*********************************************************/
-					SerializeTool.ReadCustomCollection<Proto.Test1>(L4, _buffer_, ref _offset_);
+					int count3 = XBuffer.ReadInt(_buffer_, ref _offset_);
+					for (int i = 0; i < count3; ++i)
+					{
+						var sid = XBuffer.ReadInt(_buffer_, ref _offset_);
+						if (sid <= 0)
+						{
+							L4.Add(default);
+							continue;
+						}
+						var val = Create<Proto.Test1>(sid);
+						_offset_ = val.Read(_buffer_, _offset_);
+						L4.Add(val);
+					}
 					/*********************************************************/
 
 
@@ -92,7 +115,17 @@ namespace Proto
 
 					
 					/*********************************************************/
-					SerializeTool.Read_long_string_Map(M1, _buffer_, ref _offset_);
+					int count4 = XBuffer.ReadInt(_buffer_, ref _offset_);
+					for (int i = 0; i < count4; ++i)
+					{
+
+						var key = XBuffer.ReadLong(_buffer_, ref _offset_);
+
+						
+						var val = XBuffer.ReadString(_buffer_, ref _offset_);
+
+						M1.Add(key, val);
+					}
 					/*********************************************************/
 
 
@@ -103,7 +136,22 @@ namespace Proto
 
 					
 					/*********************************************************/
-					SerializeTool.Read_int_CustomMap<Proto.Test1>(M2, _buffer_, ref _offset_);
+					//SerializeTool.Read_int_CustomMap<Proto.Test1>(M2, _buffer_, ref _offset_);
+					int count5 = XBuffer.ReadInt(_buffer_, ref _offset_);
+					for (int i = 0; i < count5; ++i)
+					{
+						var key = XBuffer.ReadInt(_buffer_, ref _offset_);
+
+						var sid = XBuffer.ReadInt(_buffer_, ref _offset_);
+						if (sid <= 0)
+						{
+							M2[key] = default;
+							continue;
+						}
+						var val = Create<Proto.Test1>(sid);
+						_offset_ = val.Read(_buffer_, _offset_);
+						M2.Add(key, val);
+					}
 					/*********************************************************/
 
 
@@ -112,14 +160,21 @@ namespace Proto
 				if(_fieldNum_ > 6)
 				{
 
-					L5 = SerializeTool.Read_long(true,  _buffer_, ref _offset_);
+					//L5 = SerializeTool.Read_long(true,  _buffer_, ref _offset_);
+
+					var hasVal6 = XBuffer.ReadBool(_buffer_, ref _offset_);
+					if (hasVal6)
+						L5 = XBuffer.ReadLong(_buffer_, ref _offset_);
+					else
+						L5 = default;
+
 
 
 				}else break;
 				if(_fieldNum_ > 7)
 				{
 
-					T1 = SerializeTool.ReadCustom<Proto.Test1>(T1,true,  _buffer_, ref _offset_);
+					T1 = ReadCustom<Proto.Test1>(T1,true,  _buffer_, ref _offset_);
 
 
 				}else break;
@@ -146,49 +201,101 @@ namespace Proto
 			//写入数据
 
 			
-			_offset_ = SerializeTool.WritePrimitive(L1,false, L1!=default, _buffer_, ref _offset_);
+
+
+			XBuffer.WriteLong(L1, _buffer_, ref _offset_);
+            
+
 
 
 
 			/*********************************************************/
-			_offset_ = SerializeTool.WritePrimitiveCollection(L2, _buffer_, ref _offset_);
+			XBuffer.WriteInt(L2.Count, _buffer_, ref _offset_);
+            foreach (var item in L2)
+            {
+				XBuffer.WriteString(item, _buffer_, ref _offset_);
+            }
+			/*********************************************************/
+			
+
+
+			/*********************************************************/
+			XBuffer.WriteInt(L3.Count, _buffer_, ref _offset_);
+            foreach (var item in L3)
+            {
+				XBuffer.WriteFloat(item, _buffer_, ref _offset_);
+            }
 			/*********************************************************/
 			
 
 
 			/*********************************************************/
-			_offset_ = SerializeTool.WritePrimitiveCollection(L3, _buffer_, ref _offset_);
+			XBuffer.WriteInt(L4.Count, _buffer_, ref _offset_);
+            for (int i=0; i<L4.Count; i++)
+            {
+                if (L4[i] == null)
+                {
+                    LOGGER.Error("App.Proto.Test3.List has null item, idx == " + i);
+                    XBuffer.WriteInt(0, _buffer_, ref _offset_);
+                }
+                else
+                {
+                    XBuffer.WriteInt(L4[i].Sid, _buffer_, ref _offset_);
+                    _offset_ = L4[i].Write(_buffer_, _offset_);
+                }
+            }
 			/*********************************************************/
 			
 
 
-			/*********************************************************/
-			_offset_ = SerializeTool.WriteCustomCollection(L4, _buffer_, ref _offset_);
-			/*********************************************************/
-			
-
-
 			
 			/*********************************************************/
-			_offset_ = SerializeTool.WritePrimitiveMap(M1, _buffer_, ref _offset_);
+			//_offset_ = SerializeTool.WritePrimitiveMap(M1, _buffer_, ref _offset_);
+			XBuffer.WriteInt(M1.Count, _buffer_, ref _offset_);
+            foreach (var kv in M1)
+            {
+				XBuffer.WriteLong(kv.Key, _buffer_, ref _offset_);
+
+				XBuffer.WriteString(kv.Value, _buffer_, ref _offset_);
+            }
 			/*********************************************************/
 
-
-
-
-			
-			/*********************************************************/
-			_offset_ = SerializeTool.WriteCustomMap<Proto.Test1>(M2, _buffer_, ref _offset_);
-			/*********************************************************/
 
 
 
 			
-			_offset_ = SerializeTool.WritePrimitive(L5,true, L5!=default, _buffer_, ref _offset_);
+			/*********************************************************/
+			XBuffer.WriteInt(M2.Count, _buffer_, ref _offset_);
+            foreach (var kv in M2)
+            {
+				XBuffer.WriteInt(kv.Key, _buffer_, ref _offset_);
+
+                if (kv.Value == null)
+                {
+                    LOGGER.Error($"{this.GetType().FullName}.M2 has null item: {kv.Key.ToString()}");
+                    XBuffer.WriteInt(0, _buffer_, ref _offset_);
+                }
+                else
+                {
+                    XBuffer.WriteInt(kv.Value.Sid, _buffer_, ref _offset_);
+                    _offset_ = kv.Value.Write(_buffer_, _offset_);
+                }
+            }
+			/*********************************************************/
+
 
 
 			
-			_offset_ = SerializeTool.WriteCustom(T1,true,   T1!=default, _buffer_, ref _offset_);
+
+			bool hasVal6 = L5 != default;
+            XBuffer.WriteBool(hasVal6, _buffer_, ref _offset_);
+            if (hasVal6)
+                XBuffer.WriteLong(L5, _buffer_, ref _offset_);
+
+
+
+			
+			_offset_ = WriteCustom<Proto.Test1>(T1,true, _buffer_, ref _offset_);
 
 			
 			//覆盖当前对象长度

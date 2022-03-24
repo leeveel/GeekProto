@@ -29,10 +29,10 @@ namespace Proto
 		[SProperty(6)]
 		public double D1 { get; set; }
 
-		//[SProperty(7)]
-		//public byte[] B2 { get; set; }
+        [SProperty(7)]
+        public byte[] B2 { get; set; }
 
-		[SProperty(8, SO.Optional)]
+        [SProperty(8, SO.Optional)]
 		public string O1 { get; set; }
 	}
 
@@ -66,15 +66,6 @@ namespace Proto
         public Test1 T1 { get; set; }
     }
 
-    //[SClass(Sid._111101, SO.Msg)]
-    //public partial class ReqTest : Message
-    //{
-    //    [SProperty(0)]
-    //    public string UserId { get; set; }
-    //    public string Platform { get; set; }
-    //}
-
-
     public enum TestEnum
 	{
 		A, B, C
@@ -102,15 +93,15 @@ namespace Proto
 		public Dictionary<int, Dictionary<long, Test1>> Map5 { get; set; }
 		[SProperty(8, SO.Optional)]
 		public Test1 T1 { get; set; }
-		//[SProperty(9)]
-		//public TestEnum E1 { get; set; } = TestEnum.A;
-		//[SProperty(10)]
-		//public Dictionary<int, Dictionary<long, TestEnum>> Map6 { get; set; } = new Dictionary<int, Dictionary<long, TestEnum>>();
+		[SProperty(9)]
+		public TestEnum E1 { get; set; } = TestEnum.A;
+		[SProperty(10)]
+		public Dictionary<int, Dictionary<long, TestEnum>> Map6 { get; set; }
 
-		//[SProperty(11)]
-		//public Dictionary<int, TestEnum> Map7 { get; set; } = new Dictionary<int, TestEnum>();
-		//[SProperty(11)]
-		//public Dictionary<string, TestEnum> Map8 { get; set; } = new Dictionary<string, TestEnum>();
+		[SProperty(11)]
+		public Dictionary<int, TestEnum> Map7 { get; set; }
+		[SProperty(11)]
+		public Dictionary<string, TestEnum> Map8 { get; set; }
 		[SProperty(12, SO.Optional)]
 		public Test1 T2 { get; set; }
 	}
@@ -126,10 +117,5 @@ namespace Proto
 		[BsonDictionaryOptions(DictionaryRepresentation.ArrayOfDocuments)]  //only for bosn test
 		public Dictionary<int, string> Map { get; set; }
 	}
-
-
-
-
-
 
 }

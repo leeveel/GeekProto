@@ -19,55 +19,56 @@ namespace Tool.Test
 
         public void Test()
         {
-            //List<Test1> list = new List<Test1>();
-            //Test1 t1 = new Test1();
-            //t1.B2 = new byte[4];
-            //t1.B2[0] = 0;
-            //t1.B2[1] = 1;
-            //t1.B2[2] = 2;
-            //t1.B2[3] = 3;
-            //t1.B1 = true;
-            //t1.D1 = 2.9;
-            //t1.F1 = 1.0f;
-            //t1.I1 = 1;
-            //t1.S1 = "hello";
-            //list.Add(t1);
+            List<Test1> list = new List<Test1>();
+            Test1 t1 = new Test1();
+            t1.B2 = new byte[4];
+            t1.B2[0] = 0;
+            t1.B2[1] = 1;
+            t1.B2[2] = 2;
+            t1.B2[3] = 3;
+            t1.B1 = true;
+            t1.D1 = 2.9;
+            t1.F1 = 1.0f;
+            t1.I1 = 1;
+            t1.S1 = "hello";
+            list.Add(t1);
 
-            //Test2 t2 = new Test2();
-            //t2.B2 = new byte[4];
-            //t2.B2[0] = 5;
-            //t2.B2[1] = 6;
-            //t2.B2[2] = 7;
-            //t2.B2[3] = 8;
-            //t2.B1 = true;
-            //t2.D1 = 3.6;
-            //t2.F1 = 1.3f;
-            //t2.I1 = 1;
-            //t2.S1 = "hahhahah";
+            Test2 t2 = new Test2();
+            t2.B2 = new byte[4];
+            t2.B2[0] = 5;
+            t2.B2[1] = 6;
+            t2.B2[2] = 7;
+            t2.B2[3] = 8;
+            t2.B1 = true;
+            t2.D1 = 3.6;
+            t2.F1 = 1.3f;
+            t2.I1 = 1;
+            t2.S1 = "hahhahah";
+            t2.L1 = 987;
 
-            //list.Add(t2);
+            list.Add(t2);
 
-            //Dictionary<long, Test1> dic = new Dictionary<long, Test1>();
-            //dic.Add(500, t1);
+            Dictionary<long, Test1> dic = new Dictionary<long, Test1>();
+            dic.Add(500, t1);
 
-            //Test3 t3 = new Test3();
-            //t3.Map3.Add(100, list);
-            //t3.Map5.Add(600, dic);
-            //t3.List.Add(t1);
-            //t3.List.Add(t2);
+            Test3 t3 = new Test3();
+            t3.Map3.Add(100, list);
+            t3.Map5.Add(600, dic);
+            t3.List.Add(t1);
+            t3.List.Add(t2);
 
-            //var arr = t3.Serialize();
-            //Test3 t33 = new Test3();
-            //t33.Deserialize(arr);
-            //Console.WriteLine(t33.Map3.ContainsKey(100));
-            //Console.WriteLine(t33.Map5.ContainsKey(600));
+            var arr = t3.Serialize();
+            Test3 t33 = new Test3();
+            t33.Deserialize(arr);
+            Console.WriteLine(t33.Map3.ContainsKey(100));
+            Console.WriteLine(t33.Map5.ContainsKey(600));
 
-            //foreach (var item in t3.List)
-            //{
-            //    Console.WriteLine(item.S1);
-            //    if(item is Test2 test2)
-            //        Console.WriteLine(test2.F2);
-            //}
+            foreach (var item in t3.List)
+            {
+                Console.WriteLine(item.S1);
+                if (item is Test2 test2)
+                    Console.WriteLine(test2.L1);
+            }
         }
 
 

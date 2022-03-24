@@ -62,6 +62,7 @@ namespace Tool.Logic
                     if(!IsKeyLegal(args[0]))
                         throw new Exception($"Map Key 不合法{args[0].FullName}，只能为short, int, long, string");
                     prop.clsname1 = GetTypeName(args[0]);
+                    prop.isenum1 = args[0].IsEnum;
 
                     Type param2 = args[1];
                     if (!IsPrimitive(param2))
@@ -76,7 +77,7 @@ namespace Tool.Logic
                             prop.nestmodel = (int)NestModel.List;
                             if (listType.IsEnum)
                             {
-                                prop.isenum = true;
+                                prop.isenum3 = true;
                             }
                             else
                             {
@@ -95,13 +96,14 @@ namespace Tool.Logic
                             if (!IsKeyLegal(dicArgs[0]))
                                 throw new Exception($"Map Key 不合法{dicArgs[0].FullName}，只能为short, int, long, string");
                             prop.clsname3 = GetTypeName(dicArgs[0]);
+                            prop.isenum3 = dicArgs[0].IsEnum;
                             if (!IsPrimitive(dicArgs[1]))
                             {
                                 prop.clsname4 = GetTypeName(dicArgs[1]);
                                 prop.nestmodel = (int)NestModel.Dictionary;
                                 if (dicArgs[1].IsEnum)
                                 {
-                                    prop.isenum = true;
+                                    prop.isenum4 = true;
                                 }
                                 else
                                 {
@@ -126,7 +128,7 @@ namespace Tool.Logic
                             prop.clsname3 = listType.Name;
                             if (listType.IsEnum)
                             {
-                                prop.isenum = true;
+                                prop.isenum3 = true;
                             }
                             else
                             {
@@ -143,7 +145,7 @@ namespace Tool.Logic
                             prop.nestmodel = 0;
                             if (param2.IsEnum)
                             {
-                                prop.isenum = param2.IsEnum;
+                                prop.isenum2 = param2.IsEnum;
                             }
                             else
                             {
@@ -157,7 +159,7 @@ namespace Tool.Logic
                     else
                     {
                         prop.clsname2 = GetTypeName(param2);
-                        prop.isenum = param2.IsEnum;
+                        prop.isenum2 = param2.IsEnum;
                     }
                 }
                 else if (prop.type.Equals("list") || prop.type.Equals("set")) // list - set
@@ -166,7 +168,7 @@ namespace Tool.Logic
                     if (IsPrimitive(listType))
                     {
                         prop.clsname1 = GetTypeName(listType);
-                        prop.isenum = listType.IsEnum;
+                        prop.isenum1 = listType.IsEnum;
                     }
                     else
                     {
@@ -180,7 +182,7 @@ namespace Tool.Logic
                 else //普通属性
                 {
                     prop.clsname1 = prop.type;
-                    prop.isenum = item.PropertyType.IsEnum;
+                    prop.isenum1 = item.PropertyType.IsEnum;
                 }
             }
             ct.fields.AddRange(propList.OrderBy(prop => prop.idx));
@@ -200,6 +202,7 @@ namespace Tool.Logic
 
         public static string GetTypeName(Type propType)
         {
+
             switch (propType.Name)
             {
                 case "Int32":

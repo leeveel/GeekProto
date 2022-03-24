@@ -26,11 +26,15 @@ namespace Tool.Logic
         public string clsname2 { get; set; }  //KeyValue中value的类型
         public string clsname3 { get; set; }  //map嵌套map的key的类型
         public string clsname4 { get; set; }  //map嵌套map的value的类型
+        public bool isenum1 { get; set; }
+        public bool isenum2 { get; set; }
+        public bool isenum3 { get; set; }
+        public bool isenum4 { get; set; }
+
         public int clsid { get; set; }   //KeyValue中value的serialize class id
         /// list map, primitive
         public string type { get; set; }
         public bool optional { get; set; }
-        public bool isenum { get; set; }
         /// <summary>
         /// 0:无嵌套 1：嵌套list 2：嵌套dictionary 3：嵌套Set
         /// </summary>

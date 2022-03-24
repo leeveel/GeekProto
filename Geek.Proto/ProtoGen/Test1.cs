@@ -23,8 +23,6 @@ namespace Proto
 		{
 		}
 
-
-
 		
 		public override int Sid { get; set;} = 111101;
 
@@ -47,56 +45,110 @@ namespace Proto
 				if(_fieldNum_ > 0)
 				{
 
-					Id = SerializeTool.Read_long(false,  _buffer_, ref _offset_);
+					//Id = SerializeTool.Read_long(false,  _buffer_, ref _offset_);
+
+
+					Id = XBuffer.ReadLong(_buffer_, ref _offset_);
+
+
 
 
 				}else break;
 				if(_fieldNum_ > 1)
 				{
 
-					S1 = SerializeTool.Read_string(false,  _buffer_, ref _offset_);
+					//S1 = SerializeTool.Read_string(false,  _buffer_, ref _offset_);
+
+
+					S1 = XBuffer.ReadString(_buffer_, ref _offset_);
+
+
 
 
 				}else break;
 				if(_fieldNum_ > 2)
 				{
 
-					I1 = SerializeTool.Read_int(false,  _buffer_, ref _offset_);
+					//I1 = SerializeTool.Read_int(false,  _buffer_, ref _offset_);
+
+
+					I1 = XBuffer.ReadInt(_buffer_, ref _offset_);
+
+
 
 
 				}else break;
 				if(_fieldNum_ > 3)
 				{
 
-					B1 = SerializeTool.Read_bool(false,  _buffer_, ref _offset_);
+					//B1 = SerializeTool.Read_bool(false,  _buffer_, ref _offset_);
+
+
+					B1 = XBuffer.ReadBool(_buffer_, ref _offset_);
+
+
 
 
 				}else break;
 				if(_fieldNum_ > 4)
 				{
 
-					F1 = SerializeTool.Read_float(false,  _buffer_, ref _offset_);
+					//F1 = SerializeTool.Read_float(false,  _buffer_, ref _offset_);
+
+
+					F1 = XBuffer.ReadFloat(_buffer_, ref _offset_);
+
+
 
 
 				}else break;
 				if(_fieldNum_ > 5)
 				{
 
-					S2 = SerializeTool.Read_short(false,  _buffer_, ref _offset_);
+					//S2 = SerializeTool.Read_short(false,  _buffer_, ref _offset_);
+
+
+					S2 = XBuffer.ReadShort(_buffer_, ref _offset_);
+
+
 
 
 				}else break;
 				if(_fieldNum_ > 6)
 				{
 
-					D1 = SerializeTool.Read_double(false,  _buffer_, ref _offset_);
+					//D1 = SerializeTool.Read_double(false,  _buffer_, ref _offset_);
+
+
+					D1 = XBuffer.ReadDouble(_buffer_, ref _offset_);
+
+
 
 
 				}else break;
 				if(_fieldNum_ > 7)
 				{
 
-					O1 = SerializeTool.Read_string(true,  _buffer_, ref _offset_);
+					//B2 = SerializeTool.Read_byte[](false,  _buffer_, ref _offset_);
+
+
+					B2 = XBuffer.ReadBytes(_buffer_, ref _offset_);
+
+
+
+
+				}else break;
+				if(_fieldNum_ > 8)
+				{
+
+					//O1 = SerializeTool.Read_string(true,  _buffer_, ref _offset_);
+
+					var hasVal8 = XBuffer.ReadBool(_buffer_, ref _offset_);
+					if (hasVal8)
+						O1 = XBuffer.ReadString(_buffer_, ref _offset_);
+					else
+						O1 = default;
+
 
 
 				}else break;
@@ -118,40 +170,81 @@ namespace Proto
 			XBuffer.WriteInt(0, _buffer_, ref _offset_);
 			
 			//写入字段数量,最多支持255个
-			XBuffer.WriteByte(8, _buffer_, ref _offset_);
+			XBuffer.WriteByte(9, _buffer_, ref _offset_);
 			
 			//写入数据
 
 			
-			_offset_ = SerializeTool.WritePrimitive(Id,false, Id!=default, _buffer_, ref _offset_);
 
 
-			
-			_offset_ = SerializeTool.WritePrimitive(S1,false, S1!=default, _buffer_, ref _offset_);
+			XBuffer.WriteLong(Id, _buffer_, ref _offset_);
+            
 
-
-			
-			_offset_ = SerializeTool.WritePrimitive(I1,false, I1!=default, _buffer_, ref _offset_);
 
 
 			
-			_offset_ = SerializeTool.WritePrimitive(B1,false, B1!=default, _buffer_, ref _offset_);
 
 
-			
-			_offset_ = SerializeTool.WritePrimitive(F1,false, F1!=default, _buffer_, ref _offset_);
+			XBuffer.WriteString(S1, _buffer_, ref _offset_);
+            
 
-
-			
-			_offset_ = SerializeTool.WritePrimitive(S2,false, S2!=default, _buffer_, ref _offset_);
 
 
 			
-			_offset_ = SerializeTool.WritePrimitive(D1,false, D1!=default, _buffer_, ref _offset_);
+
+
+			XBuffer.WriteInt(I1, _buffer_, ref _offset_);
+            
+
 
 
 			
-			_offset_ = SerializeTool.WritePrimitive(O1,true, O1!=default, _buffer_, ref _offset_);
+
+
+			XBuffer.WriteBool(B1, _buffer_, ref _offset_);
+            
+
+
+
+			
+
+
+			XBuffer.WriteFloat(F1, _buffer_, ref _offset_);
+            
+
+
+
+			
+
+
+			XBuffer.WriteShort(S2, _buffer_, ref _offset_);
+            
+
+
+
+			
+
+
+			XBuffer.WriteDouble(D1, _buffer_, ref _offset_);
+            
+
+
+
+			
+
+
+			XBuffer.WriteBytes(B2, _buffer_, ref _offset_);
+            
+
+
+
+			
+
+			bool hasVal8 = O1 != default;
+            XBuffer.WriteBool(hasVal8, _buffer_, ref _offset_);
+            if (hasVal8)
+                XBuffer.WriteString(O1, _buffer_, ref _offset_);
+
 
 			
 			//覆盖当前对象长度

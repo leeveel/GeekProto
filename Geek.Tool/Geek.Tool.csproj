@@ -31,7 +31,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <None Update="Template\Message2.liquid">
+	  <None Update="Template\Message3.liquid">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </None>
 	  <None Update="Template\Serialize.liquid">

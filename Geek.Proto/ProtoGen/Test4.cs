@@ -26,8 +26,6 @@ namespace Proto
 
 		}
 
-
-
 		
 		public override int Sid { get; set;} = 111104;
 
@@ -50,14 +48,14 @@ namespace Proto
 				if(_fieldNum_ > 0)
 				{
 
-					T1 = SerializeTool.ReadCustom<Proto.Test1>(T1,true,  _buffer_, ref _offset_);
+					T1 = ReadCustom<Proto.Test1>(T1,true,  _buffer_, ref _offset_);
 
 
 				}else break;
 				if(_fieldNum_ > 1)
 				{
 
-					T2 = SerializeTool.ReadCustom<Proto.Test2>(T2,true,  _buffer_, ref _offset_);
+					T2 = ReadCustom<Proto.Test2>(T2,true,  _buffer_, ref _offset_);
 
 
 				}else break;
@@ -66,7 +64,17 @@ namespace Proto
 
 					
 					/*********************************************************/
-					SerializeTool.Read_int_string_Map(Map, _buffer_, ref _offset_);
+					int count3 = XBuffer.ReadInt(_buffer_, ref _offset_);
+					for (int i = 0; i < count3; ++i)
+					{
+
+						var key = XBuffer.ReadInt(_buffer_, ref _offset_);
+
+						
+						var val = XBuffer.ReadString(_buffer_, ref _offset_);
+
+						Map.Add(key, val);
+					}
 					/*********************************************************/
 
 
@@ -95,17 +103,24 @@ namespace Proto
 			//写入数据
 
 			
-			_offset_ = SerializeTool.WriteCustom(T1,true,   T1!=default, _buffer_, ref _offset_);
+			_offset_ = WriteCustom<Proto.Test1>(T1,true, _buffer_, ref _offset_);
 
 
 			
-			_offset_ = SerializeTool.WriteCustom(T2,true,   T2!=default, _buffer_, ref _offset_);
+			_offset_ = WriteCustom<Proto.Test2>(T2,true, _buffer_, ref _offset_);
 
 
 
 			
 			/*********************************************************/
-			_offset_ = SerializeTool.WritePrimitiveMap(Map, _buffer_, ref _offset_);
+			//_offset_ = SerializeTool.WritePrimitiveMap(Map, _buffer_, ref _offset_);
+			XBuffer.WriteInt(Map.Count, _buffer_, ref _offset_);
+            foreach (var kv in Map)
+            {
+				XBuffer.WriteInt(kv.Key, _buffer_, ref _offset_);
+
+				XBuffer.WriteString(kv.Value, _buffer_, ref _offset_);
+            }
 			/*********************************************************/
 
 

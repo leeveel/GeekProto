@@ -38,7 +38,7 @@ namespace Geek.Tool
                     case ConsoleKey.D3:
                         string basePath = AppDomain.CurrentDomain.BaseDirectory;
                         string factoryTemplatePath = @"Template\Factory.liquid";
-                        string templatePath = @"Template\Message.liquid";
+                        string templatePath = @"Template\Message3.liquid";
                         string dllPath = basePath + "Geek.Proto.dll";
                         string outputPath = @"..\Geek.Proto\ProtoGen\";
                         new ProtoGen(factoryTemplatePath, templatePath, dllPath, outputPath, false).Gen();
