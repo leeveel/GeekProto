@@ -192,7 +192,8 @@ namespace Tool.Logic
 
         public static bool IsKeyLegal(Type type)
         {
-            return type.Equals(typeof(int)) || type.Equals(typeof(string)) || type.Equals(typeof(long)) || type.Equals(typeof(short));
+            return type.IsPrimitive || type.IsEnum || type.Equals(typeof(string));
+            //return type.Equals(typeof(int)) || type.Equals(typeof(string)) || type.Equals(typeof(long)) || type.Equals(typeof(short));
         }
 
         public static bool IsPrimitive(Type type)
