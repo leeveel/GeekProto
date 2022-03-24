@@ -272,7 +272,7 @@ namespace Proto
 
                 if (kv.Value == null)
                 {
-                    LOGGER.Error($"{this.GetType().FullName}.M2 has null item: {kv.Key.ToString()}");
+                    LOGGER.Error($"{this.GetType().FullName}.M2 has null item: {kv.Key}");
                     XBuffer.WriteInt(0, _buffer_, ref _offset_);
                 }
                 else

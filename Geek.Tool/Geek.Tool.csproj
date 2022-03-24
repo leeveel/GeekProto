@@ -31,16 +31,13 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <None Update="Template\Message3.liquid">
+	  <None Update="Template\Message.liquid">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </None>
 	  <None Update="Template\Serialize.liquid">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </None>
 	  <None Update="Template\Factory.liquid">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  </None>
-	  <None Update="Template\Message.liquid">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </None>
 	</ItemGroup>

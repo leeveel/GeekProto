@@ -192,7 +192,7 @@ namespace Tool.Test
                 t44.Deserialize(arr);
                 if (i == 0)
                 {
-                    Console.WriteLine(arr.Length);
+                    Console.WriteLine("数据长度:" + arr.Length);
                     //Console.WriteLine(t44.T1.S1);
                     //foreach (var item in t44.Map)
                     //{
@@ -212,7 +212,7 @@ namespace Tool.Test
                 var t44 = JsonConvert.DeserializeObject<Test4>(jsonStr);
                 if (i == 0)
                 {
-                    Console.WriteLine(System.Text.Encoding.UTF8.GetBytes(jsonStr).Length);
+                    Console.WriteLine("数据长度:" + System.Text.Encoding.UTF8.GetBytes(jsonStr).Length);
                     //foreach (var item in t44.Map)
                     //{
                     //    Console.WriteLine(item.Value);
@@ -233,7 +233,7 @@ namespace Tool.Test
                 var t44 = BsonSerializer.Deserialize<Test4>(bson);
                 if (i == 0)
                 {
-                    Console.WriteLine(bson.Length);
+                    Console.WriteLine("数据长度:" + bson.Length);
                     //foreach (var item in t44.Map)
                     //{
                     //    Console.WriteLine(item.Value);

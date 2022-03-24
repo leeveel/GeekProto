@@ -437,7 +437,7 @@ namespace Proto
 
                 if (kv.Value == null)
                 {
-                    LOGGER.Error($"{this.GetType().FullName}.Map2 has null item: {kv.Key.ToString()}");
+                    LOGGER.Error($"{this.GetType().FullName}.Map2 has null item: {kv.Key}");
                     XBuffer.WriteInt(0, _buffer_, ref _offset_);
                 }
                 else
@@ -459,7 +459,7 @@ namespace Proto
             {
 				XBuffer.WriteInt(kv.Key, _buffer_, ref _offset_);
 
-				XBuffer.WriteInt(Map3.Count, _buffer_, ref _offset_);
+				XBuffer.WriteInt(kv.Value.Count, _buffer_, ref _offset_);
 				foreach (var item in kv.Value)
 				{
 					if (item == null)
@@ -487,7 +487,7 @@ namespace Proto
             {
 				XBuffer.WriteInt(kv.Key, _buffer_, ref _offset_);
 
-				XBuffer.WriteInt(Map4.Count, _buffer_, ref _offset_);
+				XBuffer.WriteInt(kv.Value.Count, _buffer_, ref _offset_);
 				foreach (var item in kv.Value)
 				{
 					if (item == null)

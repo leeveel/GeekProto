@@ -19,6 +19,8 @@ namespace {{space}}
 	{{~ readMap = {"int":"XBuffer.ReadInt(_buffer_, ref _offset_)",
 				"long":"XBuffer.ReadLong(_buffer_, ref _offset_)",
 				"bool":"XBuffer.ReadBool(_buffer_, ref _offset_)",
+				"byte":"XBuffer.ReadByte(_buffer_, ref _offset_)",
+				"sbyte":"XBuffer.ReadSByte(_buffer_, ref _offset_)",
 				"string":"XBuffer.ReadString(_buffer_, ref _offset_)",
 				"short":"XBuffer.ReadShort(_buffer_, ref _offset_)",
 				"float":"XBuffer.ReadFloat(_buffer_, ref _offset_)",
@@ -27,6 +29,8 @@ namespace {{space}}
 	{{~ writeMap = {"int":"XBuffer.WriteInt(%s, _buffer_, ref _offset_)",
 				"long":"XBuffer.WriteLong(%s, _buffer_, ref _offset_)",
 				"bool":"XBuffer.WriteBool(%s, _buffer_, ref _offset_)",
+				"byte":"XBuffer.WriteByte(%s, _buffer_, ref _offset_)",
+				"sbyte":"XBuffer.WriteSByte(%s, _buffer_, ref _offset_)",
 				"string":"XBuffer.WriteString(%s, _buffer_, ref _offset_)",
 				"short":"XBuffer.WriteShort(%s, _buffer_, ref _offset_)",
 				"float":"XBuffer.WriteFloat(%s, _buffer_, ref _offset_)",
@@ -61,8 +65,6 @@ namespace {{space}}
 			{{~ end ~}}
 			{{~ end ~}}
 		}
-
-
 
 		{{~ if msgid != 0 ~}}
         public override int MsgId { get; } = {{msgid}};
@@ -99,10 +101,30 @@ namespace {{space}}
 					{{~ if field.type == "list" || field.type == "set" ~}}   {{~#处理list和set~}}
 					
 					/*********************************************************/
-					{{~ if readMap[field.clsname1] || field.isenum ~}}
-					SerializeTool.Read_{{field.clsname1}}_Collection({{field.name}}, _buffer_, ref _offset_);
+					{{~ if readMap[field.clsname1] || field.isenum1 ~}}
+					int count{{field.idx}} = XBuffer.ReadInt(_buffer_, ref _offset_);
+					for (int i = 0; i < count{{field.idx}}; ++i)
+					{
+						{{~ if field.isenum1 ~}}
+						{{field.name}}.Add(({{field.clsname1}})XBuffer.ReadInt(_buffer_, ref _offset_));
+						{{~ else ~}}
+						{{field.name}}.Add({{readMap[field.clsname1]}});
+						{{~ end ~}}
+					}
 					{{~ else ~}}
-					SerializeTool.ReadCustomCollection<{{field.clsname1}}>({{field.name}}, _buffer_, ref _offset_);
+					int count{{field.idx}} = XBuffer.ReadInt(_buffer_, ref _offset_);
+					for (int i = 0; i < count{{field.idx}}; ++i)
+					{
+						var sid = XBuffer.ReadInt(_buffer_, ref _offset_);
+						if (sid <= 0)
+						{
+							{{field.name}}.Add(default);
+							continue;
+						}
+						var val = Create<{{field.clsname1}}>(sid);
+						_offset_ = val.Read(_buffer_, _offset_);
+						{{field.name}}.Add(val);
+					}
 					{{~ end ~}}
 					/*********************************************************/
 
@@ -111,42 +133,179 @@ namespace {{space}}
 					{{~ if field.nestmodel == 0 ~}}   {{~#无嵌套模式~}}
 					
 					/*********************************************************/
-					{{~ if readMap[field.clsname2] || field.isenum ~}}
-					SerializeTool.Read_{{field.clsname1}}_{{field.clsname2}}_Map({{field.name}}, _buffer_, ref _offset_);
+					{{~ if readMap[field.clsname2] || field.isenum2 ~}}
+					int count{{field.idx}} = XBuffer.ReadInt(_buffer_, ref _offset_);
+					for (int i = 0; i < count{{field.idx}}; ++i)
+					{
+
+						{{~ if field.isenum1 ~}}
+						var key = ({{field.clsname1}})XBuffer.ReadInt(_buffer_, ref _offset_);
+						{{~ else ~}}
+						var key = {{readMap[field.clsname1]}};
+						{{~ end ~}}
+
+						
+						{{~ if field.isenum2 ~}}
+						var val = ({{field.clsname2}})XBuffer.ReadInt(_buffer_, ref _offset_);
+						{{~ else ~}}
+						var val = {{readMap[field.clsname2]}};
+						{{~ end ~}}
+
+						{{field.name}}.Add(key, val);
+					}
 					{{~ else ~}}
-					SerializeTool.Read_{{field.clsname1}}_CustomMap<{{field.clsname2}}>({{field.name}}, _buffer_, ref _offset_);
+					//SerializeTool.Read_{{field.clsname1}}_CustomMap<{{field.clsname2}}>({{field.name}}, _buffer_, ref _offset_);
+					int count{{field.idx}} = XBuffer.ReadInt(_buffer_, ref _offset_);
+					for (int i = 0; i < count{{field.idx}}; ++i)
+					{
+						{{~ if field.isenum1 ~}}
+						var key = ({{field.clsname1}})XBuffer.ReadInt(_buffer_, ref _offset_);
+						{{~ else ~}}
+						var key = {{readMap[field.clsname1]}};
+						{{~ end ~}}
+
+						var sid = XBuffer.ReadInt(_buffer_, ref _offset_);
+						if (sid <= 0)
+						{
+							{{field.name}}[key] = default;
+							continue;
+						}
+						var val = Create<{{field.clsname2}}>(sid);
+						_offset_ = val.Read(_buffer_, _offset_);
+						{{field.name}}.Add(key, val);
+					}
 					{{~ end ~}}
 					/*********************************************************/
 
-					{{~ else if field.nestmodel == 1 ~}}  {{~#嵌套List/Set模式~}}
+					{{~ else if field.nestmodel == 1 || field.nestmodel == 2 ~}}  {{~#嵌套List/Set模式~}}
 
 
 					/*********************************************************/
-					{{~ if readMap[field.clsname3] || field.isenum ~}}
-					SerializeTool.Read_{{field.clsname1}}_{{field.clsname3}}_NestList({{field.name}}, _buffer_, ref _offset_);
+					{{~ if readMap[field.clsname3] || field.isenum3 ~}}
+					int count{{field.idx}} = XBuffer.ReadInt(_buffer_, ref _offset_);
+					for (int i = 0; i < count{{field.idx}}; ++i)
+					{
+						{{~ if field.isenum1 ~}}
+						var key = ({{field.clsname1}})XBuffer.ReadInt(_buffer_, ref _offset_);
+						{{~ else ~}}
+						var key = {{readMap[field.clsname1]}};
+						{{~ end ~}}
+
+						{{~ if field.nestmodel == 1 ~}}
+						var val = new List<{{field.clsname3}}>(); //TODO:类型处理
+						{{~ else if field.nestmodel == 2 ~}}
+						var val = new HashSet<{{field.clsname3}}>(); //TODO:类型处理
+						{{~ end ~}}
+						
+						//ReadPrimitiveCollection(val, buffer, ref offset);
+						int count{{field.idx}}2 = XBuffer.ReadInt(_buffer_, ref _offset_);
+						for (int j = 0; j < count{{field.idx}}2; ++j)
+						{
+							{{~ if field.isenum3 ~}}
+							val.Add(({{field.isenum3}})XBuffer.ReadInt(_buffer_, ref _offset_));
+							{{~ else ~}}
+							val.Add({{readMap[field.isenum3]}});
+							{{~ end ~}}
+						}
+						{{field.name}}.Add(key, val);
+					}
 					{{~ else ~}}
-					SerializeTool.Read_{{field.clsname1}}_NestCustomList<{{field.clsname3}}>({{field.name}}, _buffer_, ref _offset_);
-					{{~ end ~}}
-					/*********************************************************/
+					int count{{field.idx}} = XBuffer.ReadInt(_buffer_, ref _offset_);
+					for (int i = 0; i < count{{field.idx}}; ++i)
+					{
+						{{~ if field.isenum1 ~}}
+						var key = ({{field.clsname1}})XBuffer.ReadInt(_buffer_, ref _offset_);
+						{{~ else ~}}
+						var key = {{readMap[field.clsname1]}};
+						{{~ end ~}}
 
-					{{~ else if field.nestmodel == 2 ~}}  {{~#嵌套set模式~}}
+						{{~ if field.nestmodel == 1 ~}}
+						var val = new List<{{field.clsname3}}>(); //TODO:类型处理
+						{{~ else if field.nestmodel == 2 ~}}
+						var val = new HashSet<{{field.clsname3}}>(); //TODO:类型处理
+						{{~ end ~}}
 
-
-					/*********************************************************/
-					{{~ if readMap[field.clsname3] || field.isenum ~}}
-					SerializeTool.Read_{{field.clsname1}}_{{field.clsname3}}_NestSet<{{field.clsname1}}, {{field.clsname3}}>({{field.name}}, _buffer_, ref _offset_);
-					{{~ else ~}}
-					SerializeTool.Read_{{field.clsname1}}_NestCustomSet<{{field.clsname3}}>({{field.name}}, _buffer_, ref _offset_);
+						int count{{field.idx}}2 = XBuffer.ReadInt(_buffer_, ref _offset_);
+						for (int j = 0; j < count{{field.idx}}2; ++j)
+						{
+							var sid = XBuffer.ReadInt(_buffer_, ref _offset_);
+							if (sid <= 0)
+							{
+								val.Add(default);
+								continue;
+							}
+							var val2 = Create<{{field.clsname3}}>(sid);
+							_offset_ = val2.Read(_buffer_, _offset_);
+							val.Add(val2);
+						}
+						{{field.name}}.Add(key, val);
+					}
 					{{~ end ~}}
 					/*********************************************************/
 
 					{{~ else if field.nestmodel == 3 ~}}  {{~#嵌套Map模式~}}
 
 					/*********************************************************/
-					{{~ if readMap[field.clsname4] || field.isenum ~}}
-					SerializeTool.Read_{{field.clsname1}}_{{field.clsname3}}_{{field.clsname4}}_NestMap({{field.name}}, _buffer_, ref _offset_);
+					{{~ if readMap[field.clsname4] || field.isenum4 ~}}
+					//SerializeTool.Read_{{field.clsname1}}_{{field.clsname3}}_{{field.clsname4}}_NestMap({{field.name}}, _buffer_, ref _offset_);
+					int count{{field.idx}} = XBuffer.ReadInt(_buffer_, ref _offset_);
+					for (int i = 0; i < count{{field.idx}}; ++i)
+					{
+						{{~ if field.isenum1 ~}}
+						var key = ({{field.clsname1}})XBuffer.ReadInt(_buffer_, ref _offset_);
+						{{~ else ~}}
+						var key = {{readMap[field.clsname1]}};
+						{{~ end ~}}
+
+						var val = new Dictionary<{{field.clsname3}}, {{field.clsname4}}>();         //TODO:类型处理
+						int count{{field.idx}}2 = XBuffer.ReadInt(_buffer_, ref _offset_);
+						for (int j = 0; j < count{{field.idx}}2; ++j)
+						{
+							{{~ if field.isenum3 ~}}
+							var key2 = ({{field.clsname3}})XBuffer.ReadInt(_buffer_, ref _offset_);
+							{{~ else ~}}
+							var key2 = {{readMap[field.clsname3]}};
+							{{~ end ~}}
+
+							{{~ if field.isenum4 ~}}
+							var val2 = ({{field.clsname4}})XBuffer.ReadInt(_buffer_, ref _offset_);
+							{{~ else ~}}
+							var val2 = {{readMap[field.clsname4]}};
+							{{~ end ~}}
+
+							val.Add(key2, val2);
+						}
+						{{field.name}}.Add(key, val);
+					}
 					{{~ else ~}}
-					SerializeTool.Read_{{field.clsname1}}_{{field.clsname3}}_NestCustomMap<{{field.clsname4}}>({{field.name}}, _buffer_, ref _offset_);
+					//SerializeTool.Read_{{field.clsname1}}_{{field.clsname3}}_NestCustomMap<{{field.clsname4}}>({{field.name}}, _buffer_, ref _offset_);
+					int count{{field.idx}} = XBuffer.ReadInt(_buffer_, ref _offset_);
+					for (int i = 0; i < count{{field.idx}}; ++i)
+					{
+						var key = {{readMap[field.clsname1]}};
+						var val = new Dictionary<{{field.clsname3}}, {{field.clsname4}}>(); //TODO:类型处理
+						//ReadCustomMap(val, buffer, ref offset);
+						int count{{field.idx}}2 = XBuffer.ReadInt(_buffer_, ref _offset_);
+						for (int j = 0; j < count{{field.idx}}2; ++j)
+						{
+							{{~ if field.isenum3 ~}}
+							var key2 = ({{field.clsname3}})XBuffer.ReadInt(_buffer_, ref _offset_);
+							{{~ else ~}}
+							var key2 = {{readMap[field.clsname3]}};
+							{{~ end ~}}
+
+							var sid = XBuffer.ReadInt(_buffer_, ref _offset_);
+							if (sid <= 0)
+							{
+								val[key2] = default;
+								continue;
+							}
+							var val2 = Create<{{field.clsname4}}>(sid);
+							_offset_ = val2.Read(_buffer_, _offset_);
+							val.Add(key2, val2);
+						}
+						{{field.name}}.Add(key, val);
+					}
 					{{~ end ~}}
 					/*********************************************************/
 
@@ -154,10 +313,27 @@ namespace {{space}}
 
 					{{~ else ~}} {{~#普通字段 ~}}
 
-					{{~ if readMap[field.clsname1] || field.isenum ~}}
-					{{field.name}} = SerializeTool.Read_{{field.clsname1}}({{~ field.optional ~}},  _buffer_, ref _offset_);
+					{{~ if readMap[field.clsname1] || field.isenum1 ~}}
+					//{{field.name}} = SerializeTool.Read_{{field.clsname1}}({{~ field.optional ~}},  _buffer_, ref _offset_);
+
+					{{~ if field.optional ~}}
+					var hasVal{{field.idx}} = XBuffer.ReadBool(_buffer_, ref _offset_);
+					if (hasVal{{field.idx}})
+						{{field.name}} = {{readMap[field.clsname1]}};
+					else
+						{{field.name}} = default;
 					{{~ else ~}}
-					{{field.name}} = SerializeTool.ReadCustom<{{field.clsname1}}>({{field.name}}, {{~ field.optional ~}},  _buffer_, ref _offset_);
+
+					{{~ if field.isenum1 ~}}
+					{{field.name}} = ({{field.clsname1}})XBuffer.ReadInt(_buffer_, ref _offset_);;
+					{{~ else ~}}
+					{{field.name}} = {{readMap[field.clsname1]}};
+					{{~ end ~}}
+
+					{{~ end ~}}
+
+					{{~ else ~}}
+					{{field.name}} = ReadCustom<{{field.clsname1}}>({{field.name}}, {{~ field.optional ~}},  _buffer_, ref _offset_);
 					{{~ end ~}}
 
 					{{~ end ~}}{{~#end if list}}
@@ -201,64 +377,221 @@ namespace {{space}}
 			{{~ if field.type == "list" || field.type == "set" ~}}
 
 			/*********************************************************/
-			{{~ if writeMap[field.clsname1] || field.isenum ~}}
-			_offset_ = SerializeTool.WritePrimitiveCollection({{field.name}}, _buffer_, ref _offset_);
+			{{~ if writeMap[field.clsname1] || field.isenum1 ~}}
+			XBuffer.WriteInt({{field.name}}.Count, _buffer_, ref _offset_);
+            foreach (var item in {{field.name}})
+            {
+				{{~ if field.isenum1 ~}}
+				XBuffer.WriteInt((int){{field.name}}, _buffer_, ref _offset_);
+				{{~ else ~}}
+				{{ writeMap[field.clsname1] | string.replace "%s" "item" }};
+				{{~ end ~}}
+            }
 			{{~ else ~}}
-			_offset_ = SerializeTool.WriteCustomCollection({{field.name}}, _buffer_, ref _offset_);
+			XBuffer.WriteInt({{field.name}}.Count, _buffer_, ref _offset_);
+            for (int i=0; i<{{field.name}}.Count; i++)
+            {
+                if ({{field.name}}[i] == null)
+                {
+                    LOGGER.Error("App.Proto.Test3.List has null item, idx == " + i);
+                    XBuffer.WriteInt(0, _buffer_, ref _offset_);
+                }
+                else
+                {
+                    XBuffer.WriteInt({{field.name}}[i].Sid, _buffer_, ref _offset_);
+                    _offset_ = {{field.name}}[i].Write(_buffer_, _offset_);
+                }
+            }
 			{{~ end ~}}
 			/*********************************************************/
 			
 			{{~else if field.type == "map"~}}
 
-			{{~ if field.nestmodel == 0 ~}}
+			{{~ if field.nestmodel == 0 ~}}   {{~#无嵌套模式~}}
 			
 			/*********************************************************/
-			{{~ if writeMap[field.clsname2] || field.isenum ~}}
-			_offset_ = SerializeTool.WritePrimitiveMap({{field.name}}, _buffer_, ref _offset_);
+			{{~ if writeMap[field.clsname2] || field.isenum2 ~}}
+			//_offset_ = SerializeTool.WritePrimitiveMap({{field.name}}, _buffer_, ref _offset_);
+			XBuffer.WriteInt({{field.name}}.Count, _buffer_, ref _offset_);
+            foreach (var kv in {{field.name}})
+            {
+				{{~ if field.isenum1 ~}}
+				XBuffer.WriteInt((int)kv.Key, _buffer_, ref _offset_);
+				{{~ else ~}}
+				{{ writeMap[field.clsname1] | string.replace "%s" "kv.Key" }};
+				{{~ end ~}}
+
+				{{~ if field.isenum2 ~}}
+				XBuffer.WriteInt((int)kv.Value, _buffer_, ref _offset_);
+				{{~ else ~}}
+				{{ writeMap[field.clsname2] | string.replace "%s" "kv.Value" }};
+				{{~ end ~}}
+            }
 			{{~ else ~}}
-			_offset_ = SerializeTool.WriteCustomMap<{{field.clsname2}}>({{field.name}}, _buffer_, ref _offset_);
+			XBuffer.WriteInt({{field.name}}.Count, _buffer_, ref _offset_);
+            foreach (var kv in {{field.name}})
+            {
+				{{~ if field.isenum1 ~}}
+				XBuffer.WriteInt((int)kv.Key, _buffer_, ref _offset_);
+				{{~ else ~}}
+				{{ writeMap[field.clsname1] | string.replace "%s" "kv.Key" }};
+				{{~ end ~}}
+
+                if (kv.Value == null)
+                {
+                    LOGGER.Error($"{this.GetType().FullName}.{{field.name}} has null item: {kv.Key}");
+                    XBuffer.WriteInt(0, _buffer_, ref _offset_);
+                }
+                else
+                {
+                    XBuffer.WriteInt(kv.Value.Sid, _buffer_, ref _offset_);
+                    _offset_ = kv.Value.Write(_buffer_, _offset_);
+                }
+            }
 			{{~ end ~}}
 			/*********************************************************/
 
-			{{~ else if field.nestmodel == 1 ~}} {{~#嵌套List模式~}}
+			{{~ else if field.nestmodel == 1 || field.nestmodel == 2 ~}} {{~#嵌套List/Set模式~}}
 
 
 			/*********************************************************/
-			{{~ if writeMap[field.clsname3] || field.isenum ~}}
-			_offset_ = SerializeTool.WriteNestPrimitiveList({{field.name}}, _buffer_, ref _offset_);
+			{{~ if writeMap[field.clsname3] || field.isenum3 ~}}
+			//_offset_ = SerializeTool.WriteNestPrimitiveList({{field.name}}, _buffer_, ref _offset_);
+			XBuffer.WriteInt({{field.name}}.Count, _buffer_, ref _offset_);
+            foreach (var kv in {{field.name}})
+            {
+				{{~ if field.isenum1 ~}}
+				XBuffer.WriteInt((int)kv.Key, _buffer_, ref _offset_);
+				{{~ else ~}}
+				{{ writeMap[field.clsname1] | string.replace "%s" "kv.Key" }};
+				{{~ end ~}}
+
+				XBuffer.WriteInt(kv.Value.Count, _buffer_, ref _offset_);
+				foreach (var item in kv.Value)
+				{
+					{{~ if field.isenum3 ~}}
+					XBuffer.WriteInt((int)kv.Key, _buffer_, ref _offset_);
+					{{~ else ~}}
+					{{ writeMap[field.clsname3] | string.replace "%s" "item" }};
+					{{~ end ~}}
+				}
+            }
 			{{~ else ~}}
-			_offset_ = SerializeTool.WriteNestCustomList({{field.name}}, _buffer_, ref _offset_);
-			{{~ end ~}}
-			/*********************************************************/
+			XBuffer.WriteInt({{field.name}}.Count, _buffer_, ref _offset_);
+            foreach (var kv in {{field.name}})
+            {
+                {{~ if field.isenum1 ~}}
+				XBuffer.WriteInt((int)kv.Key, _buffer_, ref _offset_);
+				{{~ else ~}}
+				{{ writeMap[field.clsname1] | string.replace "%s" "kv.Key" }};
+				{{~ end ~}}
 
-
-			{{~ else if field.nestmodel == 2 ~}} {{~#嵌套Set模式~}}
-
-
-			/*********************************************************/
-			{{~ if writeMap[field.clsname3] || field.isenum ~}}
-			_offset_ = SerializeTool.WriteNestPrimitiveSet({{field.name}}, _buffer_, ref _offset_);
-			{{~ else ~}}
-			_offset_ = SerializeTool.WriteNestCustomSet({{field.name}}, _buffer_, ref _offset_);
+				XBuffer.WriteInt(kv.Value.Count, _buffer_, ref _offset_);
+				foreach (var item in kv.Value)
+				{
+					if (item == null)
+					{
+						LOGGER.Error($"{this.GetType().FullName}.{{field.name}}.{kv.Key} has null item");
+						XBuffer.WriteInt(0, _buffer_, ref _offset_);
+					}
+					else
+					{
+						XBuffer.WriteInt(item.Sid, _buffer_, ref _offset_);
+						_offset_ = item.Write(_buffer_, _offset_);
+					}
+				}
+            }
 			{{~ end ~}}
 			/*********************************************************/
 
 			{{~ else if field.nestmodel == 3 ~}}  {{~#嵌套Map模式~}}
 
-			{{~ if writeMap[field.clsname4] || field.isenum ~}}
-			_offset_ = SerializeTool.WriteNestPrimitiveMap({{field.name}}, _buffer_, ref _offset_);
+			/*********************************************************/
+			{{~ if writeMap[field.clsname4] || field.isenum4 ~}}
+			//_offset_ = SerializeTool.WriteNestPrimitiveMap({{field.name}}, _buffer_, ref _offset_);
+			XBuffer.WriteInt({{field.name}}.Count, _buffer_, ref _offset_);
+            foreach (var kv in {{field.name}})
+            {
+				{{~ if field.isenum1 ~}}
+				XBuffer.WriteInt((int)kv.Key, _buffer_, ref _offset_);
+				{{~ else ~}}
+				{{ writeMap[field.clsname1] | string.replace "%s" "kv.Key" }};
+				{{~ end ~}}
+
+				XBuffer.WriteInt(kv.Value.Count, _buffer_, ref _offset_);
+				foreach (var kv2 in kv.Value)
+				{
+					{{~ if field.isenum3 ~}}
+					XBuffer.WriteInt((int)kv2.Key, _buffer_, ref _offset_);
+					{{~ else ~}}
+					{{ writeMap[field.clsname3] | string.replace "%s" "kv2.Key" }};
+					{{~ end ~}}
+					
+					{{~ if field.isenum4 ~}}
+					XBuffer.WriteInt((int)kv2.Value, _buffer_, ref _offset_);
+					{{~ else ~}}
+					{{ writeMap[field.clsname4] | string.replace "%s" "kv2.Value" }};
+					{{~ end ~}}
+				}
+            }
 			{{~ else ~}}
-			_offset_ = SerializeTool.WriteNestCustomMap({{field.name}}, _buffer_, ref _offset_);
+			//_offset_ = SerializeTool.WriteNestCustomMap({{field.name}}, _buffer_, ref _offset_);
+			XBuffer.WriteInt({{field.name}}.Count, _buffer_, ref _offset_);
+            foreach (var kv in {{field.name}})
+            {
+                {{~ if field.isenum1 ~}}
+				XBuffer.WriteInt((int)kv.Key, _buffer_, ref _offset_);
+				{{~ else ~}}
+				{{ writeMap[field.clsname1] | string.replace "%s" "kv.Key" }};
+				{{~ end ~}}
+
+				XBuffer.WriteInt(kv.Value.Count, _buffer_, ref _offset_);
+				foreach (var kv2 in kv.Value)
+				{
+					{{~ if field.isenum3 ~}}
+					XBuffer.WriteInt((int)kv2.Key, _buffer_, ref _offset_);
+					{{~ else ~}}
+					{{ writeMap[field.clsname3] | string.replace "%s" "kv2.Key" }};
+					{{~ end ~}}
+
+					if (kv.Value == null)
+					{
+						LOGGER.Error($"{this.GetType().FullName}.{{field.name}} has null item: {kv2.Key.ToString()}");
+						XBuffer.WriteInt(0, _buffer_, ref _offset_);
+					}
+					else
+					{
+						XBuffer.WriteInt(kv2.Value.Sid, _buffer_, ref _offset_);
+						_offset_ = kv2.Value.Write(_buffer_, _offset_);
+					}
+				}
+            }
 			{{~ end ~}}
+			/*********************************************************/
 
 			{{~ end ~}} {{~# end of nestmodel ~}}
 
 			{{~ else ~}}{{~#不是map也不是list~}}
 			
-			{{~ if readMap[field.clsname1] || field.isenum ~}}
-			_offset_ = SerializeTool.WritePrimitive({{field.name}}, {{~ field.optional ~}}, {{field.name}}!=default, _buffer_, ref _offset_);
+			{{~ if readMap[field.clsname1] || field.isenum1 ~}}
+
+			{{~ if field.optional ~}}
+			bool hasVal{{field.idx}} = {{field.name}} != default;
+            XBuffer.WriteBool(hasVal{{field.idx}}, _buffer_, ref _offset_);
+            if (hasVal{{field.idx}})
+                {{ writeMap[field.clsname1] | string.replace "%s" field.name }};
+            {{~ else ~}}
+
+			{{~ if field.isenum1 ~}}
+			XBuffer.WriteInt((int){{field.name}}, _buffer_, ref _offset_);
 			{{~ else ~}}
-			_offset_ = SerializeTool.WriteCustom({{field.name}}, {{~ field.optional ~}},   {{field.name}}!=default, _buffer_, ref _offset_);
+			{{ writeMap[field.clsname1] | string.replace "%s" field.name }};
+			{{~ end ~}}
+            
+			{{~ end ~}}
+
+			{{~ else ~}}
+			_offset_ = WriteCustom<{{field.clsname1}}>({{field.name}}, {{~ field.optional ~}}, _buffer_, ref _offset_);
 			{{~ end ~}}
 
 			{{~ end ~}}{{~#if field.type~}}
