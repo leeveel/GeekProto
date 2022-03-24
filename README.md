@@ -19,5 +19,7 @@ Dictionary的key只能为：基础类型和枚举
 
 复杂对象Key的Dictionary
 
+## 性能测试 ##
 
+![](https://github.com/leeveel/GeekProto/blob/main/Doc/test.png)
   
