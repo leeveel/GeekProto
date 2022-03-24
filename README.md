@@ -1,6 +1,8 @@
 # GeekProto
 Super Fast Binary Serialization Library
 
+性能高，数据量小，支持ILRuntime
+
 ## 支持列表： ##
 所有基础类型 byte sbyte bool short int long float double string byte[]
 
