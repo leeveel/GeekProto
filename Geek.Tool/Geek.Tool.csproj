@@ -27,17 +27,20 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\Geek.Proto\Geek.Proto.csproj" />
+	  <ProjectReference Include="..\Geek.Generate\Geek.Generate.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <None Update="Template\Message.liquid">
+	  <None Update="Configs\config.xml">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </None>
-	  <None Update="Template\Serialize.liquid">
+	  <None Update="Configs\Template\Message.liquid">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </None>
-	  <None Update="Template\Factory.liquid">
+	  <None Update="Configs\Template\Serialize.liquid">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Configs\Template\Factory.liquid">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </None>
 	</ItemGroup>

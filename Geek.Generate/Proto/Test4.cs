@@ -13,18 +13,16 @@ using System.Collections.Generic;
 namespace Proto
 {
 	
-    public partial class Test4 : Serializable
+    public class Test4 : Serializable
 	{
 		static readonly NLog.Logger LOGGER = NLog.LogManager.GetCurrentClassLogger();
 
+		public Proto.Test1 T1 { get; set; }
+		public Proto.Test2 T2 { get; set; }
+
+		public Dictionary<int, string> Map = new Dictionary<int, string>();
 
 
-		public Test4()
-		{
-
-			Map = new Dictionary<int, string>();
-
-		}
 
 		
 		public override int Sid { get; set;} = 111104;

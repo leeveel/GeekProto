@@ -13,40 +13,31 @@ using System.Collections.Generic;
 namespace Proto
 {
 	
-    public partial class Test3 : Serializable
+    public class Test3 : Serializable
 	{
 		static readonly NLog.Logger LOGGER = NLog.LogManager.GetCurrentClassLogger();
 
+		public string UserId { get; set; }
+		public string Platform { get; set; }
+		public List<Proto.Test1> List { get; set; } = new List<Proto.Test1>();
+
+		public Dictionary<int, int> Map = new Dictionary<int, int>();
 
 
-		public Test3()
-		{
-			List = new List<Proto.Test1>();
-
-			Map = new Dictionary<int, int>();
+		public Dictionary<int, Proto.Test1> Map2 = new Dictionary<int, Proto.Test1>();
 
 
-			Map2 = new Dictionary<int, Proto.Test1>();
+		public Dictionary<int, List<Test1>> Map3 = new Dictionary<int, List<Test1>>();
 
 
-			Map3 = new Dictionary<int, List<Test1>>();
+		public Dictionary<int, HashSet<Test1>> Map4 = new Dictionary<int, HashSet<Test1>>();
 
 
-			Map4 = new Dictionary<int, HashSet<Test1>>();
+		public Dictionary<int, Dictionary<long, Proto.Test1>> Map5 = new Dictionary<int, Dictionary<long, Proto.Test1>>();
 
+		public Proto.Test1  T1 { get; set; }
+		public Proto.Test1 T2 { get; set; }
 
-			Map5 = new Dictionary<int, Dictionary<long, Proto.Test1>>();
-
-
-			Map6 = new Dictionary<int, Dictionary<long, Proto.TestEnum>>();
-
-
-			Map7 = new Dictionary<int, Proto.TestEnum>();
-
-
-			Map8 = new Dictionary<string, Proto.TestEnum>();
-
-		}
 
 		
 		public override int Sid { get; set;} = 111103;
@@ -269,88 +260,6 @@ namespace Proto
 				if(_fieldNum_ > 9)
 				{
 
-					//E1 = SerializeTool.Read_Proto.TestEnum(false,  _buffer_, ref _offset_);
-
-
-					E1 = (Proto.TestEnum)XBuffer.ReadInt(_buffer_, ref _offset_);;
-
-
-
-
-				}else break;
-				if(_fieldNum_ > 10)
-				{
-
-
-					/*********************************************************/
-					//SerializeTool.Read_int_long_Proto.TestEnum_NestMap(Map6, _buffer_, ref _offset_);
-					int count10 = XBuffer.ReadInt(_buffer_, ref _offset_);
-					for (int i = 0; i < count10; ++i)
-					{
-						var key = XBuffer.ReadInt(_buffer_, ref _offset_);
-
-						var val = new Dictionary<long, Proto.TestEnum>();         //TODO:类型处理
-						int count102 = XBuffer.ReadInt(_buffer_, ref _offset_);
-						for (int j = 0; j < count102; ++j)
-						{
-							var key2 = XBuffer.ReadLong(_buffer_, ref _offset_);
-
-							var val2 = (Proto.TestEnum)XBuffer.ReadInt(_buffer_, ref _offset_);
-
-							val.Add(key2, val2);
-						}
-						Map6.Add(key, val);
-					}
-					/*********************************************************/
-
-
-
-				}else break;
-				if(_fieldNum_ > 11)
-				{
-
-					
-					/*********************************************************/
-					int count11 = XBuffer.ReadInt(_buffer_, ref _offset_);
-					for (int i = 0; i < count11; ++i)
-					{
-
-						var key = XBuffer.ReadInt(_buffer_, ref _offset_);
-
-						
-						var val = (Proto.TestEnum)XBuffer.ReadInt(_buffer_, ref _offset_);
-
-						Map7.Add(key, val);
-					}
-					/*********************************************************/
-
-
-
-				}else break;
-				if(_fieldNum_ > 12)
-				{
-
-					
-					/*********************************************************/
-					int count11 = XBuffer.ReadInt(_buffer_, ref _offset_);
-					for (int i = 0; i < count11; ++i)
-					{
-
-						var key = XBuffer.ReadString(_buffer_, ref _offset_);
-
-						
-						var val = (Proto.TestEnum)XBuffer.ReadInt(_buffer_, ref _offset_);
-
-						Map8.Add(key, val);
-					}
-					/*********************************************************/
-
-
-
-				}else break;
-				if(_fieldNum_ > 13)
-				{
-
 					T2 = ReadCustom<Proto.Test1>(T2,true,  _buffer_, ref _offset_);
 
 
@@ -373,7 +282,7 @@ namespace Proto
 			XBuffer.WriteInt(0, _buffer_, ref _offset_);
 			
 			//写入字段数量,最多支持255个
-			XBuffer.WriteByte(14, _buffer_, ref _offset_);
+			XBuffer.WriteByte(10, _buffer_, ref _offset_);
 			
 			//写入数据
 
@@ -538,65 +447,6 @@ namespace Proto
 
 			
 			_offset_ = WriteCustom<Proto.Test1>(T1,true, _buffer_, ref _offset_);
-
-
-			
-
-
-			XBuffer.WriteInt((int)E1, _buffer_, ref _offset_);
-            
-
-
-
-
-
-			/*********************************************************/
-			//_offset_ = SerializeTool.WriteNestPrimitiveMap(Map6, _buffer_, ref _offset_);
-			XBuffer.WriteInt(Map6.Count, _buffer_, ref _offset_);
-            foreach (var kv in Map6)
-            {
-				XBuffer.WriteInt(kv.Key, _buffer_, ref _offset_);
-
-				XBuffer.WriteInt(kv.Value.Count, _buffer_, ref _offset_);
-				foreach (var kv2 in kv.Value)
-				{
-					XBuffer.WriteLong(kv2.Key, _buffer_, ref _offset_);
-					
-					XBuffer.WriteInt((int)kv2.Value, _buffer_, ref _offset_);
-				}
-            }
-			/*********************************************************/
-
-
-
-
-			
-			/*********************************************************/
-			//_offset_ = SerializeTool.WritePrimitiveMap(Map7, _buffer_, ref _offset_);
-			XBuffer.WriteInt(Map7.Count, _buffer_, ref _offset_);
-            foreach (var kv in Map7)
-            {
-				XBuffer.WriteInt(kv.Key, _buffer_, ref _offset_);
-
-				XBuffer.WriteInt((int)kv.Value, _buffer_, ref _offset_);
-            }
-			/*********************************************************/
-
-
-
-
-			
-			/*********************************************************/
-			//_offset_ = SerializeTool.WritePrimitiveMap(Map8, _buffer_, ref _offset_);
-			XBuffer.WriteInt(Map8.Count, _buffer_, ref _offset_);
-            foreach (var kv in Map8)
-            {
-				XBuffer.WriteString(kv.Key, _buffer_, ref _offset_);
-
-				XBuffer.WriteInt((int)kv.Value, _buffer_, ref _offset_);
-            }
-			/*********************************************************/
-
 
 
 			

@@ -18,14 +18,14 @@ namespace Tool.Logic
         public const string BaseSerializable = "Serializable";
         public const string BaseInterface = "Core.Serialize.ISerializable";
 
-        public static ClassTemplate ToTemplate(Type type, bool canUseId)
+        public static ClassTemplate ToTemplate(Type type)
         {
             //只有标记了SClass属性的才会被序列化
             var catt = GetClassAttribute(type);
             if (catt == null)
                 return null;
 
-            Console.WriteLine(type.FullName);
+            //Console.WriteLine(type.FullName);
 
             var ct = new ClassTemplate();
             ct.space = type.Namespace;
@@ -45,8 +45,9 @@ namespace Tool.Logic
                 if (fieldAtt == null)
                     continue;
 
-                //检查是否标记了partial
 
+                if (item.PropertyType.IsEnum && !Setting.SupportEnum)
+                    throw new Exception($"工具配置为，不支持枚举类型:{item.PropertyType.FullName}");
 
                 var prop = new PropTemplate();
                 prop.idx = GetPropertyValue<int>(fieldAtt, "Id");
@@ -77,6 +78,8 @@ namespace Tool.Logic
                             prop.nestmodel = (int)NestModel.List;
                             if (listType.IsEnum)
                             {
+                                if (!Setting.SupportEnum)
+                                    throw new Exception($"工具配置为，不支持枚举类型:{item.PropertyType.FullName}");
                                 prop.isenum3 = true;
                             }
                             else
@@ -92,9 +95,8 @@ namespace Tool.Logic
                         {
                             var dicArgs = param2.GenericTypeArguments;
                             prop.clsname2 = "map";
-                            //map key只能是：short, int, long, string
                             if (!IsKeyLegal(dicArgs[0]))
-                                throw new Exception($"Map Key 不合法{dicArgs[0].FullName}，只能为short, int, long, string");
+                                throw new Exception($"Map Key 不合法{dicArgs[0].FullName}，只能为基础类型");
                             prop.clsname3 = GetTypeName(dicArgs[0]);
                             prop.isenum3 = dicArgs[0].IsEnum;
                             if (!IsPrimitive(dicArgs[1]))
@@ -103,6 +105,8 @@ namespace Tool.Logic
                                 prop.nestmodel = (int)NestModel.Dictionary;
                                 if (dicArgs[1].IsEnum)
                                 {
+                                    if (!Setting.SupportEnum)
+                                        throw new Exception($"工具配置为，不支持枚举类型:{item.PropertyType.FullName}");
                                     prop.isenum4 = true;
                                 }
                                 else
@@ -128,6 +132,8 @@ namespace Tool.Logic
                             prop.clsname3 = listType.Name;
                             if (listType.IsEnum)
                             {
+                                if (!Setting.SupportEnum)
+                                    throw new Exception($"工具配置为，不支持枚举类型:{item.PropertyType.FullName}");
                                 prop.isenum3 = true;
                             }
                             else
@@ -145,6 +151,8 @@ namespace Tool.Logic
                             prop.nestmodel = 0;
                             if (param2.IsEnum)
                             {
+                                if (!Setting.SupportEnum)
+                                    throw new Exception($"工具配置为，不支持枚举类型:{item.PropertyType.FullName}");
                                 prop.isenum2 = param2.IsEnum;
                             }
                             else
@@ -160,6 +168,8 @@ namespace Tool.Logic
                     {
                         prop.clsname2 = GetTypeName(param2);
                         prop.isenum2 = param2.IsEnum;
+                        if (prop.isenum2 && !Setting.SupportEnum)
+                            throw new Exception($"工具配置为，不支持枚举类型:{item.PropertyType.FullName}");
                     }
                 }
                 else if (prop.type.Equals("list") || prop.type.Equals("set")) // list - set
@@ -169,6 +179,8 @@ namespace Tool.Logic
                     {
                         prop.clsname1 = GetTypeName(listType);
                         prop.isenum1 = listType.IsEnum;
+                        if (prop.isenum1 && !Setting.SupportEnum)
+                            throw new Exception($"工具配置为，不支持枚举类型:{item.PropertyType.FullName}");
                     }
                     else
                     {
@@ -183,6 +195,8 @@ namespace Tool.Logic
                 {
                     prop.clsname1 = prop.type;
                     prop.isenum1 = item.PropertyType.IsEnum;
+                    if (prop.isenum1 && !Setting.SupportEnum)
+                        throw new Exception($"工具配置为，不支持枚举类型:{item.PropertyType.FullName}");
                 }
             }
             ct.fields.AddRange(propList.OrderBy(prop => prop.idx));
@@ -192,8 +206,9 @@ namespace Tool.Logic
 
         public static bool IsKeyLegal(Type type)
         {
-            return type.IsPrimitive || type.IsEnum || type.Equals(typeof(string));
-            //return type.Equals(typeof(int)) || type.Equals(typeof(string)) || type.Equals(typeof(long)) || type.Equals(typeof(short));
+            if (type.IsEnum)
+                return Setting.SupportEnum;
+            return type.IsPrimitive || type.Equals(typeof(string));
         }
 
         public static bool IsPrimitive(Type type)

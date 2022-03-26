@@ -19,10 +19,6 @@
 	</PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="ProtoGen\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="MongoDB.Bson" Version="2.15.0" />
   </ItemGroup>
 

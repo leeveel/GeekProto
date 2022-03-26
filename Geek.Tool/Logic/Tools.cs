@@ -18,7 +18,6 @@ namespace Tool.Logic
                 path = Path.GetDirectoryName(path);
             if (!Directory.Exists(path))
             {
-                CreateAsDirectory(path, true);
                 Directory.CreateDirectory(path);
             }
         }

@@ -14,7 +14,7 @@ namespace Tool.Test
 
         public Test001()
         {
-            BsonSerializer.RegisterSerializer(new EnumSerializer<TestEnum>(BsonType.String));
+            //BsonSerializer.RegisterSerializer(new EnumSerializer<TestEnum>(BsonType.String));
         }
 
         public void Test()
@@ -225,23 +225,23 @@ namespace Tool.Test
 
 
 
-            watch.Reset();
-            watch.Start();
-            for (int i = 0; i < count; i++)
-            {
-                var bson = t4.ToBson();
-                var t44 = BsonSerializer.Deserialize<Test4>(bson);
-                if (i == 0)
-                {
-                    Console.WriteLine("数据长度:" + bson.Length);
-                    //foreach (var item in t44.Map)
-                    //{
-                    //    Console.WriteLine(item.Value);
-                    //}
-                }
-            }
-            watch.Stop();
-            Console.WriteLine($"Bson：{watch.Elapsed.TotalMilliseconds}(毫秒)");
+            //watch.Reset();
+            //watch.Start();
+            //for (int i = 0; i < count; i++)
+            //{
+            //    var bson = t4.ToBson();
+            //    var t44 = BsonSerializer.Deserialize<Test4>(bson);
+            //    if (i == 0)
+            //    {
+            //        Console.WriteLine("数据长度:" + bson.Length);
+            //        //foreach (var item in t44.Map)
+            //        //{
+            //        //    Console.WriteLine(item.Value);
+            //        //}
+            //    }
+            //}
+            //watch.Stop();
+            //Console.WriteLine($"Bson：{watch.Elapsed.TotalMilliseconds}(毫秒)");
 
 
         }

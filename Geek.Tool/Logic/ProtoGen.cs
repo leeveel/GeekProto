@@ -10,50 +10,73 @@ namespace Tool.Logic
     {
         private string dllPath;
         private string outputPath;
-        private string templatePath;
-        private string mainTemplatePath;
-        private bool canUseId;
+        private string msgTemplatePath;
+        private string factoryTemplatePath;
+        private string clientOutputPath;
+
+        /// <summary>
+        /// 0: 服务器 1：客户端 2：服务器+客户端
+        /// </summary>
+        private int exportModel;
         /// <summary>
         /// /
         /// </summary>
-        /// <param name="mainTemplatePath"></param>
-        /// <param name="templatePath"></param>
+        /// <param name="factoryTemplatePath"></param>
+        /// <param name="msgTemplatePath"></param>
         /// <param name="dllPath"></param>
         /// <param name="outputPath"></param>
         /// <param name="canUseID">预留DBState(mongodb主键)</param>
-        public ProtoGen(string mainTemplatePath, string templatePath, string dllPath, string outputPath, bool canUseID)
+        public ProtoGen(int exportModel)
         {
-            this.dllPath = dllPath;
-            this.outputPath = outputPath;
-            this.templatePath = templatePath;
-            canUseId = canUseID;
-            this.mainTemplatePath = mainTemplatePath;
+            this.dllPath = Setting.DllPath;
+            this.factoryTemplatePath = Setting.FactoryTemplatePath;
+            this.msgTemplatePath = Setting.MessageTemplatePath;
+            this.outputPath = Setting.ServerOutPath + Path.DirectorySeparatorChar;
+            this.clientOutputPath = Setting.ClientOutPath + Path.DirectorySeparatorChar;
+            this.exportModel = exportModel;
         }
 
         public void Gen()
         {
             outputPath.CreateAsDirectory();
-            Template template = Template.Parse(File.ReadAllText(templatePath));
-            Template factoryTemplate = Template.Parse(File.ReadAllText(mainTemplatePath));
+            Template template = Template.Parse(File.ReadAllText(msgTemplatePath));
+            Template factoryTemplate = Template.Parse(File.ReadAllText(factoryTemplatePath));
 
             var factory = new FactoryTemplate();
             var targetDll = LoadDll();
             var types = targetDll.GetTypes();
             foreach (var type in types)
             {
-                var tp = TypeParser.ToTemplate(type, canUseId);
+                var tp = TypeParser.ToTemplate(type);
                 if (tp == null)
                     continue;
                 factory.sclasses.Add(tp);
                 System.Console.WriteLine($"gen {type.Name}");
                 var str = template.Render(tp);
-                string filePath = outputPath + type.Name;
-                File.WriteAllText(filePath + ".cs", str);
-            }
 
-            string factoryPath = outputPath + "SClassFactory.cs";
-            var fstr = factoryTemplate.Render(factory);
-            File.WriteAllText(factoryPath, fstr);
+                if (exportModel == 1 || exportModel == 3)
+                {
+                    //导出服务器
+                    string filePath = outputPath + type.Name;
+                    File.WriteAllText(filePath + ".cs", str);
+
+                    string factoryPath = outputPath + "SClassFactory.cs";
+                    var fstr = factoryTemplate.Render(factory);
+                    File.WriteAllText(factoryPath, fstr);
+                }
+                if (exportModel == 2 || exportModel == 3)
+                {
+                    //导出客户端
+                    string filePath = clientOutputPath + type.Name;
+                    filePath.CreateAsDirectory(true);
+                    File.WriteAllText(filePath + ".cs", str);
+
+                    string factoryPath = clientOutputPath + "SClassFactory.cs";
+                    factoryPath.CreateAsDirectory(true);
+                    var fstr = factoryTemplate.Render(factory);
+                    File.WriteAllText(factoryPath, fstr);
+                }
+            }
         }
 
         private Assembly LoadDll()

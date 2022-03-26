@@ -37,34 +37,32 @@ namespace {{space}}
 				"double":"XBuffer.WriteDouble(%s, _buffer_, ref _offset_)",
 				"byte[]":"XBuffer.WriteBytes(%s, _buffer_, ref _offset_)"} ~}}
 	
-    public partial class {{name}} : {{super}}
+    public class {{name}} : {{super}}
 	{
 		static readonly NLog.Logger LOGGER = NLog.LogManager.GetCurrentClassLogger();
 
+		{{~ for field in fields ~}}
+		{{~ if field.type == "list"~}}
+		public List<{{field.clsname1}}> {{field.name}} { get; set; } = new List<{{field.clsname1}}>();
+		{{~ else if field.type == "set"~}}
+		public HashSet<{{field.clsname1}}> {{field.name}} { get; set; } = new HashSet<{{field.clsname1}}>();
+		{{~ else if field.type == "map"~}}
 
+		{{~ if field.nestmodel == 0 ~}}   {{~#无嵌套模式~}}
+		public Dictionary<{{field.clsname1}}, {{field.clsname2}}> {{field.name}} = new Dictionary<{{field.clsname1}}, {{field.clsname2}}>();
+		{{~ else if field.nestmodel == 1 ~}}   {{~#嵌套list模式~}}
+		public Dictionary<{{field.clsname1}}, List<{{field.clsname3}}>> {{field.name}} = new Dictionary<{{field.clsname1}}, List<{{field.clsname3}}>>();
+		{{~ else if field.nestmodel == 2 ~}}   {{~#嵌套set模式~}}
+		public Dictionary<{{field.clsname1}}, HashSet<{{field.clsname3}}>> {{field.name}} = new Dictionary<{{field.clsname1}}, HashSet<{{field.clsname3}}>>();
+		{{~ else if field.nestmodel == 3 ~}}   {{~#嵌套map模式~}}
+		public Dictionary<{{field.clsname1}}, Dictionary<{{field.clsname3}}, {{field.clsname4}}>> {{field.name}} = new Dictionary<{{field.clsname1}}, Dictionary<{{field.clsname3}}, {{field.clsname4}}>>();
+		{{~ end ~}}
 
-		public {{name}}()
-		{
-			{{~ for field in fields ~}}
-			{{~ if field.type == "list"~}}
-			{{field.name}} = new List<{{field.clsname1}}>();
-			{{~ else if field.type == "set"~}}
-			{{field.name}} = new HashSet<{{field.clsname1}}>();
-			{{~ else if field.type == "map"~}}
+		{{~ else ~}}
+		public {{field.clsname1}} {{field.name}} { get; set; }
+		{{~ end ~}}
+		{{~ end ~}}
 
-			{{~ if field.nestmodel == 0 ~}}   {{~#无嵌套模式~}}
-			{{field.name}} = new Dictionary<{{field.clsname1}}, {{field.clsname2}}>();
-			{{~ else if field.nestmodel == 1 ~}}   {{~#嵌套list模式~}}
-			{{field.name}} = new Dictionary<{{field.clsname1}}, List<{{field.clsname3}}>>();
-			{{~ else if field.nestmodel == 2 ~}}   {{~#嵌套set模式~}}
-			{{field.name}} = new Dictionary<{{field.clsname1}}, HashSet<{{field.clsname3}}>>();
-			{{~ else if field.nestmodel == 3 ~}}   {{~#嵌套map模式~}}
-			{{field.name}} = new Dictionary<{{field.clsname1}}, Dictionary<{{field.clsname3}}, {{field.clsname4}}>>();
-			{{~ end ~}}
-
-			{{~ end ~}}
-			{{~ end ~}}
-		}
 
 		{{~ if msgid != 0 ~}}
         public override int MsgId { get; } = {{msgid}};

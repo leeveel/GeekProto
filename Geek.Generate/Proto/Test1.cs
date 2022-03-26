@@ -13,15 +13,20 @@ using System.Collections.Generic;
 namespace Proto
 {
 	
-    public partial class Test1 : Serializable
+    public class Test1 : Serializable
 	{
 		static readonly NLog.Logger LOGGER = NLog.LogManager.GetCurrentClassLogger();
 
+		public long Id { get; set; }
+		public string S1 { get; set; }
+		public int I1 { get; set; }
+		public bool B1 { get; set; }
+		public float F1 { get; set; }
+		public short S2 { get; set; }
+		public double D1 { get; set; }
+		public byte[] B2 { get; set; }
+		public string O1 { get; set; }
 
-
-		public Test1()
-		{
-		}
 
 		
 		public override int Sid { get; set;} = 111101;

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+  <factory-template-path>Configs\Template\Factory.liquid</factory-template-path><!-- 工厂模板路径 -->
+  <message-template-path>Configs\Template\Message.liquid</message-template-path> <!-- 消息模板路径 -->
+  <dll-path>Geek.Proto.dll</dll-path> <!-- proto dll path-->
+  <server-out-path>..\Geek.Generate\Proto\</server-out-path> <!-- 服务器代码导出路径 -->
+  <client-out-path>Client</client-out-path><!-- 客户端代码导出路径-->
+  <support-enum>false</support-enum>	<!-- 是否支持枚举 -->	
+</config>

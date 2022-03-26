@@ -14,6 +14,7 @@ namespace Proto
 				case 111102: return new Proto.Test2();
 				case 111103: return new Proto.Test3();
 				case 111104: return new Proto.Test4();
+				case 111105: return new Proto.ReqTest();
 				default: return default;
 			}
 		}

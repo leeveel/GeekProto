@@ -13,24 +13,23 @@ using System.Collections.Generic;
 namespace Proto
 {
 	
-    public partial class Test2 : Test1
+    public class Test2 : Test1
 	{
 		static readonly NLog.Logger LOGGER = NLog.LogManager.GetCurrentClassLogger();
 
+		public long L1 { get; set; }
+		public List<string> L2 { get; set; } = new List<string>();
+		public List<float> L3 { get; set; } = new List<float>();
+		public List<Proto.Test1> L4 { get; set; } = new List<Proto.Test1>();
+
+		public Dictionary<long, string> M1 = new Dictionary<long, string>();
 
 
-		public Test2()
-		{
-			L2 = new List<string>();
-			L3 = new List<float>();
-			L4 = new List<Proto.Test1>();
+		public Dictionary<int, Proto.Test1> M2 = new Dictionary<int, Proto.Test1>();
 
-			M1 = new Dictionary<long, string>();
+		public long  L5 { get; set; }
+		public Proto.Test1 T1 { get; set; }
 
-
-			M2 = new Dictionary<int, Proto.Test1>();
-
-		}
 
 		
 		public override int Sid { get; set;} = 111102;

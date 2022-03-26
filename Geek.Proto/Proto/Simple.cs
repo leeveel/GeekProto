@@ -6,7 +6,7 @@ using System.Collections.Generic;
 namespace Proto
 {
     [SClass(SID._111101)]
-	public partial class Test1
+	public class Test1
 	{
 		[SProperty(0)]
 		public long Id { get; set; }
@@ -37,7 +37,7 @@ namespace Proto
 	}
 
     [SClass(SID._111102)]
-    public partial class Test2 : Test1
+    public class Test2 : Test1
     {
         [SProperty(0)]
         public long L1 { get; set; }
@@ -73,7 +73,7 @@ namespace Proto
 
 
 	[SClass(SID._111103)]
-	public partial class Test3 : Serializable
+	public class Test3 : Serializable
 	{
 		[SProperty(0)]
 		public string UserId { get; set; }
@@ -93,21 +93,21 @@ namespace Proto
 		public Dictionary<int, Dictionary<long, Test1>> Map5 { get; set; }
 		[SProperty(8, SO.Optional)]
 		public Test1 T1 { get; set; }
-		[SProperty(9)]
-		public TestEnum E1 { get; set; } = TestEnum.A;
-		[SProperty(10)]
-		public Dictionary<int, Dictionary<long, TestEnum>> Map6 { get; set; }
+		//[SProperty(9)]
+		//public TestEnum E1 { get; set; } = TestEnum.A;
+		//[SProperty(10)]
+		//public Dictionary<int, Dictionary<long, TestEnum>> Map6 { get; set; }
 
-		[SProperty(11)]
-		public Dictionary<int, TestEnum> Map7 { get; set; }
-		[SProperty(11)]
-		public Dictionary<string, TestEnum> Map8 { get; set; }
+		//[SProperty(11)]
+		//public Dictionary<int, TestEnum> Map7 { get; set; }
+		//[SProperty(11)]
+		//public Dictionary<string, TestEnum> Map8 { get; set; }
 		[SProperty(12, SO.Optional)]
 		public Test1 T2 { get; set; }
 	}
 
 	[SClass(SID._111104)]
-	public partial class Test4 : Serializable
+	public class Test4 : Serializable
 	{
 		[SProperty(0, SO.Optional)]
 		public Test1 T1 { get; set; }
@@ -117,5 +117,15 @@ namespace Proto
 		[BsonDictionaryOptions(DictionaryRepresentation.ArrayOfDocuments)]  //only for bosn test
 		public Dictionary<int, string> Map { get; set; }
 	}
+
+    [SClass(SID._111105, SO.Msg)]
+    public class ReqTest : Message
+    {
+        [SProperty(0)]
+        public string UserId { get; set; }
+        public string Platform { get; set; }
+    }
+
+
 
 }
