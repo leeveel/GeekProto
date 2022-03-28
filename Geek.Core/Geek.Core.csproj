@@ -24,4 +24,8 @@
 	  <PackageReference Include="NLog" Version="4.7.14" />
 	</ItemGroup>
 
+	<ItemGroup>
+		<PackageReference Include="MongoDB.Bson" Version="2.15.0" />
+	</ItemGroup>
+
 </Project>

@@ -5,38 +5,105 @@
 //兼容限制：不能修改字段类型（如从bool改为long）
 //兼容限制：消息类型(含msdId)不能作为其他消息的成员类型
 
-
 using Geek.Server;
 using System.Collections.Generic;
 
 ///<summary></summary>
-namespace Proto
+namespace Geek.Server.Proto
 {
 	
     public class Test2 : Test1
 	{
 		static readonly NLog.Logger LOGGER = NLog.LogManager.GetCurrentClassLogger();
 
-		public long L1 { get; set; }
-		public List<string> L2 { get; set; } = new List<string>();
-		public List<float> L3 { get; set; } = new List<float>();
-		public List<Proto.Test1> L4 { get; set; } = new List<Proto.Test1>();
 
-		public Dictionary<long, string> M1 = new Dictionary<long, string>();
+		/*********************************************************/
+		private long _L1_;
+		public long  L1 
+		{ 
+			get{ return _L1_; }
+			set{ _L1_= value; _stateChanged=true;}
+		}
+		private StateList<string> _L2_ = new StateList<string>();
+		public StateList<string> L2
+		{
+			get{ return _L2_; }
+			set{ _L2_= value; _stateChanged=true;}
+		}
+		private StateList<float> _L3_ = new StateList<float>();
+		public StateList<float> L3
+		{
+			get{ return _L3_; }
+			set{ _L3_= value; _stateChanged=true;}
+		}
+		private StateList<Geek.Server.Proto.Test1> _L4_ = new StateList<Geek.Server.Proto.Test1>();
+		public StateList<Geek.Server.Proto.Test1> L4
+		{
+			get{ return _L4_; }
+			set{ _L4_= value; _stateChanged=true;}
+		}
+
+		private StateMap<long, string> _M1_ = new StateMap<long, string>();
+		public StateMap<long, string> M1
+		{
+			get{ return _M1_; }
+			set{ _M1_= value; _stateChanged=true;}
+		}
 
 
-		public Dictionary<int, Proto.Test1> M2 = new Dictionary<int, Proto.Test1>();
+		private StateMap<int, Geek.Server.Proto.Test1> _M2_ = new StateMap<int, Geek.Server.Proto.Test1>();
+		public StateMap<int, Geek.Server.Proto.Test1> M2
+		{
+			get{ return _M2_; }
+			set{ _M2_= value; _stateChanged=true;}
+		}
 
-		public long  L5 { get; set; }
-		public Proto.Test1 T1 { get; set; }
+		private long _L5_;
+		public long  L5 
+		{ 
+			get{ return _L5_; }
+			set{ _L5_= value; _stateChanged=true;}
+		}
+		private Geek.Server.Proto.Test1 _T1_;
+		public Geek.Server.Proto.Test1 T1 
+		{ 
+			get{ return _T1_; }
+			set{ _T1_= value; _stateChanged=true;}
+		}
 
 
 		
-		public override int Sid { get; set;} = 111102;
+		///<summary>状态是否改变</summary>
+		public override bool IsChanged
+		{
+			get
+			{
+				if(_stateChanged)
+					return true;
+				if(L4.IsChanged)
+					return true;
+				if(T1.IsChanged)
+					return true;
+				return false;
+			}
+		}
+		
+		///<summary>清除所有改变[含子项]</summary>
+		public override void ClearChanges()
+		{
+			_stateChanged = false;
+						L4.ClearChanges();
+			T1.ClearChanges();
+		}
+		/*********************************************************/
+
+
+		public override int Sid { get;} = 111102;
+		public new const int SID = 111102;
 
 		public override T Create<T>(int sid)
         {
-            return Proto.SClassFactory.Create<T>(sid);
+            return Geek.Server.Proto.SClassFactory.Create<T>(sid);
         }
 
 		///<summary>反序列化，读取数据</summary>
@@ -101,7 +168,7 @@ namespace Proto
 							L4.Add(default);
 							continue;
 						}
-						var val = Create<Proto.Test1>(sid);
+						var val = Create<Geek.Server.Proto.Test1>(sid);
 						_offset_ = val.Read(_buffer_, _offset_);
 						L4.Add(val);
 					}
@@ -135,7 +202,7 @@ namespace Proto
 
 					
 					/*********************************************************/
-					//SerializeTool.Read_int_CustomMap<Proto.Test1>(M2, _buffer_, ref _offset_);
+					//SerializeTool.Read_int_CustomMap<Geek.Server.Proto.Test1>(M2, _buffer_, ref _offset_);
 					int count5 = XBuffer.ReadInt(_buffer_, ref _offset_);
 					for (int i = 0; i < count5; ++i)
 					{
@@ -147,7 +214,7 @@ namespace Proto
 							M2[key] = default;
 							continue;
 						}
-						var val = Create<Proto.Test1>(sid);
+						var val = Create<Geek.Server.Proto.Test1>(sid);
 						_offset_ = val.Read(_buffer_, _offset_);
 						M2.Add(key, val);
 					}
@@ -173,7 +240,7 @@ namespace Proto
 				if(_fieldNum_ > 7)
 				{
 
-					T1 = ReadCustom<Proto.Test1>(T1,true,  _buffer_, ref _offset_);
+					T1 = ReadCustom<Geek.Server.Proto.Test1>(T1,true,  _buffer_, ref _offset_);
 
 
 				}else break;
@@ -294,7 +361,7 @@ namespace Proto
 
 
 			
-			_offset_ = WriteCustom<Proto.Test1>(T1,true, _buffer_, ref _offset_);
+			_offset_ = WriteCustom<Geek.Server.Proto.Test1>(T1,true, _buffer_, ref _offset_);
 
 			
 			//覆盖当前对象长度

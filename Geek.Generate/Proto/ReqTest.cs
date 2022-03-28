@@ -5,28 +5,30 @@
 //兼容限制：不能修改字段类型（如从bool改为long）
 //兼容限制：消息类型(含msdId)不能作为其他消息的成员类型
 
-
 using Geek.Server;
 using System.Collections.Generic;
 
 ///<summary></summary>
-namespace Proto
+namespace Geek.Server.Proto
 {
 	
     public class ReqTest : BaseMessage
 	{
 		static readonly NLog.Logger LOGGER = NLog.LogManager.GetCurrentClassLogger();
 
-		public string UserId { get; set; }
+
+		/*********************************************************/
+		public string  UserId {get;set;}
+		/*********************************************************/
 
 
-        public override int MsgId { get; } = 111105;
-		
-		public override int Sid { get; set;} = 111105;
+		public const int MsgID = SID;
+		public override int Sid { get;} = 111105;
+		public const int SID = 111105;
 
 		public override T Create<T>(int sid)
         {
-            return Proto.SClassFactory.Create<T>(sid);
+            return Geek.Server.Proto.SClassFactory.Create<T>(sid);
         }
 
 		///<summary>反序列化，读取数据</summary>

@@ -14,7 +14,7 @@ namespace Tool.Logic
 
         public const string BaseMessage = "BaseMessage";
         public const string BaseSerializable = "Serializable";
-        public const string BaseInterface = "Core.Serialize.ISerializable";
+        public const string BaseInterface = "Geek.Server.ISerializable";
 
         public static ClassTemplate ToTemplate(Type type)
         {
@@ -23,16 +23,31 @@ namespace Tool.Logic
             if (catt == null)
                 return null;
 
-            //Console.WriteLine(type.FullName);
-
             var ct = new ClassTemplate();
             ct.space = type.Namespace;
             ct.name = type.Name;
             ct.fullname = type.FullName;
-            ct.super = GetSuperName(type);
+            ct.super = GetSuperName(type, ct);
             ct.sid = GetPropertyValue<int>(catt, "Id");
             if (ct.super.Equals(BaseMessage))
                 ct.msgid = ct.sid;
+
+            var isState = GetPropertyValue<bool>(catt, "IsState");
+            ct.isstate = isState;
+            if (isState)
+            {
+                ct.listname = "StateList";
+                ct.linklistname = "StateLinkedList";
+                ct.setname = "StateSet";
+                ct.mapname = "StateMap";
+            }
+            else 
+            {
+                ct.listname = "List";
+                ct.linklistname = "LinkedList";
+                ct.setname = "HashSet";
+                ct.mapname = "Dictionary";
+            }
 
             var pros = type.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
             List<PropTemplate> propList = new List<PropTemplate>();
@@ -42,7 +57,6 @@ namespace Tool.Logic
                 var fieldAtt = GetPropertyAttribute(item);
                 if (fieldAtt == null)
                     continue;
-
 
                 if (item.PropertyType.IsEnum && !Setting.SupportEnum)
                     throw new Exception($"工具配置为，不支持枚举类型:{item.PropertyType.FullName}");
@@ -60,7 +74,7 @@ namespace Tool.Logic
                     //map key只能是：short, int, long, string
                     if(!IsKeyLegal(args[0]))
                         throw new Exception($"Map Key 不合法{args[0].FullName}，只能为short, int, long, string");
-                    prop.clsname1 = GetTypeName(args[0]);
+                    prop.clsname1 = GetClassName(args[0]);
                     prop.isenum1 = args[0].IsEnum;
 
                     Type param2 = args[1];
@@ -95,11 +109,11 @@ namespace Tool.Logic
                             prop.clsname2 = "map";
                             if (!IsKeyLegal(dicArgs[0]))
                                 throw new Exception($"Map Key 不合法{dicArgs[0].FullName}，只能为基础类型");
-                            prop.clsname3 = GetTypeName(dicArgs[0]);
+                            prop.clsname3 = GetClassName(dicArgs[0]);
                             prop.isenum3 = dicArgs[0].IsEnum;
                             if (!IsPrimitive(dicArgs[1]))
                             {
-                                prop.clsname4 = GetTypeName(dicArgs[1]);
+                                prop.clsname4 = GetClassName(dicArgs[1]);
                                 prop.nestmodel = (int)NestModel.Dictionary;
                                 if (dicArgs[1].IsEnum)
                                 {
@@ -117,7 +131,7 @@ namespace Tool.Logic
                             }
                             else
                             {
-                                prop.clsname4 = GetTypeName(dicArgs[1]);
+                                prop.clsname4 = GetClassName(dicArgs[1]);
                                 prop.nestmodel = (int)NestModel.Dictionary;
                             }
                         }
@@ -145,7 +159,7 @@ namespace Tool.Logic
                         //无嵌套
                         else
                         {
-                            prop.clsname2 = GetTypeName(param2);
+                            prop.clsname2 = GetClassName(param2);
                             prop.nestmodel = 0;
                             if (param2.IsEnum)
                             {
@@ -164,7 +178,7 @@ namespace Tool.Logic
                     }
                     else
                     {
-                        prop.clsname2 = GetTypeName(param2);
+                        prop.clsname2 = GetClassName(param2);
                         prop.isenum2 = param2.IsEnum;
                         if (prop.isenum2 && !Setting.SupportEnum)
                             throw new Exception($"工具配置为，不支持枚举类型:{item.PropertyType.FullName}");
@@ -175,7 +189,7 @@ namespace Tool.Logic
                     var listType = item.PropertyType.GenericTypeArguments[0];
                     if (IsPrimitive(listType))
                     {
-                        prop.clsname1 = GetTypeName(listType);
+                        prop.clsname1 = GetClassName(listType);
                         prop.isenum1 = listType.IsEnum;
                         if (prop.isenum1 && !Setting.SupportEnum)
                             throw new Exception($"工具配置为，不支持枚举类型:{item.PropertyType.FullName}");
@@ -185,13 +199,13 @@ namespace Tool.Logic
                         var att = GetClassAttribute(listType);
                         if (att == null)
                             throw new Exception($"此类型不可序列化{listType.FullName}");
-                        prop.clsname1 = GetTypeName(listType);
+                        prop.clsname1 = GetClassName(listType);
                         prop.clsid = GetPropertyValue<int>(att, "Id");
                     }
                 }
                 else //普通属性
                 {
-                    prop.clsname1 = prop.type;
+                    prop.clsname1 = GetClassName(item.PropertyType);
                     prop.isenum1 = item.PropertyType.IsEnum;
                     if (prop.isenum1 && !Setting.SupportEnum)
                         throw new Exception($"工具配置为，不支持枚举类型:{item.PropertyType.FullName}");
@@ -214,25 +228,27 @@ namespace Tool.Logic
             return  type.IsPrimitive || type.Equals(typeof(string));
         }
 
-        public static string GetTypeName(Type propType)
-        {
 
+        public static string GetClassName(Type propType)
+        {
             switch (propType.Name)
             {
+                case "Byte":
+                    return "byte";
+                case "SByte":
+                    return "sbyte";
+                case "Boolean":
+                    return "bool";
                 case "Int32":
                     return "int";
                 case "Int64":
                     return "long";
-                case "Boolean":
-                    return "bool";
                 case "Single":
                     return "float";
                 case "Int16":
                     return "short";
                 case "Double":
                     return "double";
-                case "Byte":
-                    return "byte";
                 case "Byte[]":
                     return "byte[]";
                 case "String":
@@ -240,23 +256,35 @@ namespace Tool.Logic
                 default:
                     break;
             }
+            return propType.FullName;
+        }
 
-            if (propType.Name.Contains("Dictionary"))
+        public static string GetTypeName(Type propType)
+        {
+
+            if (IsPrimitive(propType))
+                return "field";
+
+            else if (propType.Name.Contains("Dictionary"))
                 return "map";
-
-            if (propType.Name.Contains("List"))
+            else if (propType.Name.Contains("List"))
                 return "list";
-
-            if (propType.Name.Contains("HashSet"))
+            else if (propType.Name.Contains("HashSet"))
                 return "set";
+            else if (propType.Name.Contains("StateMap"))
+                return "statemap";
+            else if (propType.Name.Contains("StateList"))
+                return "statelist";
+            else if (propType.Name.Contains("StateSet"))
+                return "stateset";
 
             return propType.FullName;
         }
 
 
-        public static string GetSuperName(Type type)
+        public static string GetSuperName(Type type, ClassTemplate ct)
         {
-            //Message 之前不能相互继承
+            //Message 之间不能相互继承
             var att = GetClassAttribute(type);
             if (att == null)
                 throw new Exception($"此类型不可序列化{type.FullName}");
@@ -277,6 +305,9 @@ namespace Tool.Logic
             var baseAtt = GetClassAttribute(type.BaseType);
             if (baseAtt == null)
                 throw new Exception($"不合法的基类{type.BaseType.FullName},基类不可序列化");
+            
+            //子类
+            ct.issubclass = true;
             return baseName;
         }
 

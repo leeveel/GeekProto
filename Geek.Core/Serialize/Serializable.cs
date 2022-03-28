@@ -14,6 +14,13 @@ namespace Geek.Server
 
         static readonly NLog.Logger LOGGER = NLog.LogManager.GetCurrentClassLogger();
 
+        protected bool _stateChanged;
+        public virtual bool IsChanged { get { return _stateChanged; } }
+
+        /// <summary>需要在actor线程内部调用才安全</summary>
+        public virtual void ClearChanges() { _stateChanged = false; }
+
+
         public virtual int Read(byte[] buffer, int offset)
         {
             return offset;
@@ -55,7 +62,7 @@ namespace Geek.Server
             this.Read(data, 0);
         }
 
-        public virtual int Sid { get; set; }
+        public virtual int Sid { get; }
 
         public virtual T Create<T>(int sid) where T : Serializable
         {

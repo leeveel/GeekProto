@@ -9,12 +9,17 @@ namespace Geek.Server
         /// <summary>
         /// 是否将ClassId作为消息ID
         /// </summary>
-        public bool IsMsg { get; private set; } 
+        public bool IsMsg { get; private set; }
+        /// <summary>
+        /// 是否可以作为State回存数据库
+        /// </summary>
+        public bool IsState { get; private set; }
         public int Id { get; private set; }
-        public SClassAttribute(int id, bool isMsg=false)
+        public SClassAttribute(int id, bool isMsg=false, bool isState=false)
         {
             Id = id;
             IsMsg = isMsg;
+            IsState = isState;
         }
     }
 

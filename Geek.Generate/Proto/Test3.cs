@@ -5,26 +5,27 @@
 //兼容限制：不能修改字段类型（如从bool改为long）
 //兼容限制：消息类型(含msdId)不能作为其他消息的成员类型
 
-
 using Geek.Server;
 using System.Collections.Generic;
 
 ///<summary></summary>
-namespace Proto
+namespace Geek.Server.Proto
 {
 	
     public class Test3 : Serializable
 	{
 		static readonly NLog.Logger LOGGER = NLog.LogManager.GetCurrentClassLogger();
 
-		public string UserId { get; set; }
-		public string Platform { get; set; }
-		public List<Proto.Test1> List { get; set; } = new List<Proto.Test1>();
+
+		/*********************************************************/
+		public string  UserId {get;set;}
+		public string Platform {get;set;}
+		public List<Geek.Server.Proto.Test1> List = new List<Geek.Server.Proto.Test1>();
 
 		public Dictionary<int, int> Map = new Dictionary<int, int>();
 
 
-		public Dictionary<int, Proto.Test1> Map2 = new Dictionary<int, Proto.Test1>();
+		public Dictionary<int, Geek.Server.Proto.Test1> Map2 = new Dictionary<int, Geek.Server.Proto.Test1>();
 
 
 		public Dictionary<int, List<Test1>> Map3 = new Dictionary<int, List<Test1>>();
@@ -33,18 +34,19 @@ namespace Proto
 		public Dictionary<int, HashSet<Test1>> Map4 = new Dictionary<int, HashSet<Test1>>();
 
 
-		public Dictionary<int, Dictionary<long, Proto.Test1>> Map5 = new Dictionary<int, Dictionary<long, Proto.Test1>>();
+		public Dictionary<int, Dictionary<long, Geek.Server.Proto.Test1>> Map5 = new Dictionary<int, Dictionary<long, Geek.Server.Proto.Test1>>();
 
-		public Proto.Test1  T1 { get; set; }
-		public Proto.Test1 T2 { get; set; }
+		public Geek.Server.Proto.Test1  T1 {get;set;}
+		public Geek.Server.Proto.Test1 T2 {get;set;}
+		/*********************************************************/
 
 
-		
-		public override int Sid { get; set;} = 111103;
+		public override int Sid { get;} = 111103;
+		public const int SID = 111103;
 
 		public override T Create<T>(int sid)
         {
-            return Proto.SClassFactory.Create<T>(sid);
+            return Geek.Server.Proto.SClassFactory.Create<T>(sid);
         }
 
 		///<summary>反序列化，读取数据</summary>
@@ -95,7 +97,7 @@ namespace Proto
 							List.Add(default);
 							continue;
 						}
-						var val = Create<Proto.Test1>(sid);
+						var val = Create<Geek.Server.Proto.Test1>(sid);
 						_offset_ = val.Read(_buffer_, _offset_);
 						List.Add(val);
 					}
@@ -129,7 +131,7 @@ namespace Proto
 
 					
 					/*********************************************************/
-					//SerializeTool.Read_int_CustomMap<Proto.Test1>(Map2, _buffer_, ref _offset_);
+					//SerializeTool.Read_int_CustomMap<Geek.Server.Proto.Test1>(Map2, _buffer_, ref _offset_);
 					int count4 = XBuffer.ReadInt(_buffer_, ref _offset_);
 					for (int i = 0; i < count4; ++i)
 					{
@@ -141,7 +143,7 @@ namespace Proto
 							Map2[key] = default;
 							continue;
 						}
-						var val = Create<Proto.Test1>(sid);
+						var val = Create<Geek.Server.Proto.Test1>(sid);
 						_offset_ = val.Read(_buffer_, _offset_);
 						Map2.Add(key, val);
 					}
@@ -221,12 +223,12 @@ namespace Proto
 
 
 					/*********************************************************/
-					//SerializeTool.Read_int_long_NestCustomMap<Proto.Test1>(Map5, _buffer_, ref _offset_);
+					//SerializeTool.Read_int_long_NestCustomMap<Geek.Server.Proto.Test1>(Map5, _buffer_, ref _offset_);
 					int count7 = XBuffer.ReadInt(_buffer_, ref _offset_);
 					for (int i = 0; i < count7; ++i)
 					{
 						var key = XBuffer.ReadInt(_buffer_, ref _offset_);
-						var val = new Dictionary<long, Proto.Test1>(); //TODO:类型处理
+						var val = new Dictionary<long, Geek.Server.Proto.Test1>(); //TODO:类型处理
 						//ReadCustomMap(val, buffer, ref offset);
 						int count72 = XBuffer.ReadInt(_buffer_, ref _offset_);
 						for (int j = 0; j < count72; ++j)
@@ -239,7 +241,7 @@ namespace Proto
 								val[key2] = default;
 								continue;
 							}
-							var val2 = Create<Proto.Test1>(sid);
+							var val2 = Create<Geek.Server.Proto.Test1>(sid);
 							_offset_ = val2.Read(_buffer_, _offset_);
 							val.Add(key2, val2);
 						}
@@ -253,14 +255,14 @@ namespace Proto
 				if(_fieldNum_ > 8)
 				{
 
-					T1 = ReadCustom<Proto.Test1>(T1,true,  _buffer_, ref _offset_);
+					T1 = ReadCustom<Geek.Server.Proto.Test1>(T1,true,  _buffer_, ref _offset_);
 
 
 				}else break;
 				if(_fieldNum_ > 9)
 				{
 
-					T2 = ReadCustom<Proto.Test1>(T2,true,  _buffer_, ref _offset_);
+					T2 = ReadCustom<Geek.Server.Proto.Test1>(T2,true,  _buffer_, ref _offset_);
 
 
 				}else break;
@@ -446,11 +448,11 @@ namespace Proto
 
 
 			
-			_offset_ = WriteCustom<Proto.Test1>(T1,true, _buffer_, ref _offset_);
+			_offset_ = WriteCustom<Geek.Server.Proto.Test1>(T1,true, _buffer_, ref _offset_);
 
 
 			
-			_offset_ = WriteCustom<Proto.Test1>(T2,true, _buffer_, ref _offset_);
+			_offset_ = WriteCustom<Geek.Server.Proto.Test1>(T2,true, _buffer_, ref _offset_);
 
 			
 			//覆盖当前对象长度

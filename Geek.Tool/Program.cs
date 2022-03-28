@@ -31,17 +31,14 @@ namespace Geek.Tool
                     Console.WriteLine("你输入了:" + key.ToString());
                     switch (key)
                     {
-                        //关闭监控进程
                         case ConsoleKey.NumPad1:
                         case ConsoleKey.D1:
                             new ProtoGen(1).Gen();
                             break;
-                        //关闭开机自启动
                         case ConsoleKey.NumPad2:
                         case ConsoleKey.D2:
                             new ProtoGen(2).Gen();
                             break;
-                        //关闭监控进程，并且同时关闭开机自启动
                         case ConsoleKey.NumPad3:
                         case ConsoleKey.D3:
                             new ProtoGen(3).Gen();
@@ -66,17 +63,14 @@ namespace Geek.Tool
                     Console.WriteLine("你输入了:" + key.ToString());
                     switch (key)
                     {
-                        //关闭监控进程
                         case ConsoleKey.NumPad1:
                         case ConsoleKey.D1:
                             test.Test();
                             break;
-                        //关闭开机自启动
                         case ConsoleKey.NumPad2:
                         case ConsoleKey.D2:
                             test.TestPerformance1();
                             break;
-                        //关闭监控进程，并且同时关闭开机自启动
                         case ConsoleKey.NumPad3:
                         case ConsoleKey.D3:
                             new ProtoGen(1).Gen();

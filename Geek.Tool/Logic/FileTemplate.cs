@@ -57,8 +57,21 @@ namespace Tool.Logic
         public int msgid { get; set; }
         //包含基类的属性
         public List<PropTemplate> fields { get; set; } = new List<PropTemplate>();
-        //有子类的类型
-        public List<string> sublist = new List<string>();
+
+        /// <summary>
+        /// 如果此类可以回存数据库，则:listname="StateList", 否则："List"
+        /// </summary>
+        public string listname { get; set; }
+        public string setname { get; set; }
+        public string mapname { get; set; }
+        public string linklistname { get; set; }
+
+        public bool isstate { get; set; }
+
+        /// <summary>
+        /// 是否为子类
+        /// </summary>
+        public bool issubclass { get; set; }
     }
 
     public class TypeTemplate

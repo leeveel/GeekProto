@@ -1,4 +1,4 @@
-﻿namespace Proto
+﻿namespace Geek.Server.Proto
 {
 
     /// <summary>

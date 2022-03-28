@@ -1,7 +1,8 @@
 //auto generated, do not modify it
 
 using Geek.Server;
-namespace Proto
+
+namespace Geek.Server.Proto
 {
 	public class SClassFactory
 	{
@@ -10,11 +11,11 @@ namespace Proto
 		{
 			switch(sid)
 			{
-				case 111101: return new Proto.Test1();
-				case 111102: return new Proto.Test2();
-				case 111103: return new Proto.Test3();
-				case 111104: return new Proto.Test4();
-				case 111105: return new Proto.ReqTest();
+				case 111101: return new Geek.Server.Proto.Test1();
+				case 111102: return new Geek.Server.Proto.Test2();
+				case 111103: return new Geek.Server.Proto.Test3();
+				case 111104: return new Geek.Server.Proto.Test4();
+				case 111105: return new Geek.Server.Proto.ReqTest();
 				default: return default;
 			}
 		}

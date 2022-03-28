@@ -5,31 +5,33 @@
 //兼容限制：不能修改字段类型（如从bool改为long）
 //兼容限制：消息类型(含msdId)不能作为其他消息的成员类型
 
-
 using Geek.Server;
 using System.Collections.Generic;
 
 ///<summary></summary>
-namespace Proto
+namespace Geek.Server.Proto
 {
 	
     public class Test4 : Serializable
 	{
 		static readonly NLog.Logger LOGGER = NLog.LogManager.GetCurrentClassLogger();
 
-		public Proto.Test1 T1 { get; set; }
-		public Proto.Test2 T2 { get; set; }
+
+		/*********************************************************/
+		public Geek.Server.Proto.Test1  T1 {get;set;}
+		public Geek.Server.Proto.Test2 T2 {get;set;}
 
 		public Dictionary<int, string> Map = new Dictionary<int, string>();
 
+		/*********************************************************/
 
 
-		
-		public override int Sid { get; set;} = 111104;
+		public override int Sid { get;} = 111104;
+		public const int SID = 111104;
 
 		public override T Create<T>(int sid)
         {
-            return Proto.SClassFactory.Create<T>(sid);
+            return Geek.Server.Proto.SClassFactory.Create<T>(sid);
         }
 
 		///<summary>反序列化，读取数据</summary>
@@ -46,14 +48,14 @@ namespace Proto
 				if(_fieldNum_ > 0)
 				{
 
-					T1 = ReadCustom<Proto.Test1>(T1,true,  _buffer_, ref _offset_);
+					T1 = ReadCustom<Geek.Server.Proto.Test1>(T1,true,  _buffer_, ref _offset_);
 
 
 				}else break;
 				if(_fieldNum_ > 1)
 				{
 
-					T2 = ReadCustom<Proto.Test2>(T2,true,  _buffer_, ref _offset_);
+					T2 = ReadCustom<Geek.Server.Proto.Test2>(T2,true,  _buffer_, ref _offset_);
 
 
 				}else break;
@@ -101,11 +103,11 @@ namespace Proto
 			//写入数据
 
 			
-			_offset_ = WriteCustom<Proto.Test1>(T1,true, _buffer_, ref _offset_);
+			_offset_ = WriteCustom<Geek.Server.Proto.Test1>(T1,true, _buffer_, ref _offset_);
 
 
 			
-			_offset_ = WriteCustom<Proto.Test2>(T2,true, _buffer_, ref _offset_);
+			_offset_ = WriteCustom<Geek.Server.Proto.Test2>(T2,true, _buffer_, ref _offset_);
 
 
 

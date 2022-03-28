@@ -3,7 +3,7 @@ using MongoDB.Bson.Serialization.Options;
 using System.Collections.Generic;
 using Geek.Server;
 
-namespace Proto
+namespace Geek.Server.Proto
 {
     [SClass(SID._111101)]
 	public class Test1
@@ -36,7 +36,7 @@ namespace Proto
 		public string O1 { get; set; }
 	}
 
-    [SClass(SID._111102)]
+    [SClass(SID._111102, false, true)]
     public class Test2 : Test1
     {
         [SProperty(0)]

@@ -5,35 +5,37 @@
 //兼容限制：不能修改字段类型（如从bool改为long）
 //兼容限制：消息类型(含msdId)不能作为其他消息的成员类型
 
-
 using Geek.Server;
 using System.Collections.Generic;
 
 ///<summary></summary>
-namespace Proto
+namespace Geek.Server.Proto
 {
 	
     public class Test1 : Serializable
 	{
 		static readonly NLog.Logger LOGGER = NLog.LogManager.GetCurrentClassLogger();
 
-		public long Id { get; set; }
-		public string S1 { get; set; }
-		public int I1 { get; set; }
-		public bool B1 { get; set; }
-		public float F1 { get; set; }
-		public short S2 { get; set; }
-		public double D1 { get; set; }
-		public byte[] B2 { get; set; }
-		public string O1 { get; set; }
+
+		/*********************************************************/
+		public long  Id {get;set;}
+		public string S1 {get;set;}
+		public int I1 {get;set;}
+		public bool B1 {get;set;}
+		public float F1 {get;set;}
+		public short S2 {get;set;}
+		public double D1 {get;set;}
+		public byte[] B2 {get;set;}
+		public string O1 {get;set;}
+		/*********************************************************/
 
 
-		
-		public override int Sid { get; set;} = 111101;
+		public override int Sid { get;} = 111101;
+		public const int SID = 111101;
 
 		public override T Create<T>(int sid)
         {
-            return Proto.SClassFactory.Create<T>(sid);
+            return Geek.Server.Proto.SClassFactory.Create<T>(sid);
         }
 
 		///<summary>反序列化，读取数据</summary>

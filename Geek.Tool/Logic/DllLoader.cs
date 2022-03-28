@@ -30,7 +30,14 @@ namespace Tool.Logic
 
         public void Load()
         {
-            TargetDll = context.LoadFromAssemblyPath(dllPath);
+            try
+            {
+                TargetDll = context.LoadFromAssemblyPath(dllPath);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"找不到Dll:{dllPath},请确认Proto工程已经编译,{e}");
+            }
         }
 
         public WeakReference Unload()
