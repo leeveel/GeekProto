@@ -1,6 +1,4 @@
-﻿using Scriban;
-using System;
-using System.IO;
+﻿using System;
 using Tool.Logic;
 using Tool.Test;
 
@@ -27,20 +25,17 @@ namespace Geek.Tool
                 Console.WriteLine("3.导出服务器+客户端");
                 while (true)
                 {
-                    var key = Console.ReadKey().Key;
+                    var key = Console.ReadKey().KeyChar;
                     Console.WriteLine("你输入了:" + key.ToString());
                     switch (key)
                     {
-                        case ConsoleKey.NumPad1:
-                        case ConsoleKey.D1:
+                        case '1':
                             new ProtoGen(1).Gen();
                             break;
-                        case ConsoleKey.NumPad2:
-                        case ConsoleKey.D2:
+                        case '2':
                             new ProtoGen(2).Gen();
                             break;
-                        case ConsoleKey.NumPad3:
-                        case ConsoleKey.D3:
+                        case '3':
                             new ProtoGen(3).Gen();
                             break;
                         default:
@@ -59,20 +54,17 @@ namespace Geek.Tool
                 Test001 test = new Test001();
                 while (true)
                 {
-                    var key = Console.ReadKey().Key;
+                    var key = Console.ReadKey().KeyChar;
                     Console.WriteLine("你输入了:" + key.ToString());
                     switch (key)
                     {
-                        case ConsoleKey.NumPad1:
-                        case ConsoleKey.D1:
+                        case '1':
                             test.Test();
                             break;
-                        case ConsoleKey.NumPad2:
-                        case ConsoleKey.D2:
+                        case '2':
                             test.TestPerformance1();
                             break;
-                        case ConsoleKey.NumPad3:
-                        case ConsoleKey.D3:
+                        case '3':
                             new ProtoGen(1).Gen();
                             break;
                     }
