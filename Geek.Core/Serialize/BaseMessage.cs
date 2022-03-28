@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Core.Serialize
+namespace Geek.Server
 {
-    public abstract class Message : Serializable
+    public abstract class BaseMessage : Serializable
     {
         /// <summary>
         /// 每次通信的唯一ID

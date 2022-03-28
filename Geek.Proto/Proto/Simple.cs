@@ -1,7 +1,7 @@
-﻿using Core.Serialize;
-using MongoDB.Bson.Serialization.Attributes;
+﻿using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson.Serialization.Options;
 using System.Collections.Generic;
+using Geek.Server;
 
 namespace Proto
 {
@@ -119,7 +119,7 @@ namespace Proto
 	}
 
     [SClass(SID._111105, SO.Msg)]
-    public class ReqTest : Message
+    public class ReqTest : BaseMessage
     {
         [SProperty(0)]
         public string UserId { get; set; }

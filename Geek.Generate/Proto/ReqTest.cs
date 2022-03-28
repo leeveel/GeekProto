@@ -6,14 +6,14 @@
 //兼容限制：消息类型(含msdId)不能作为其他消息的成员类型
 
 
-using Core.Serialize;
+using Geek.Server;
 using System.Collections.Generic;
 
 ///<summary></summary>
 namespace Proto
 {
 	
-    public class ReqTest : Message
+    public class ReqTest : BaseMessage
 	{
 		static readonly NLog.Logger LOGGER = NLog.LogManager.GetCurrentClassLogger();
 

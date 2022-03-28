@@ -5,7 +5,7 @@
 //兼容限制：不能修改字段类型（如从bool改为long）
 //兼容限制：消息类型(含msdId)不能作为其他消息的成员类型
 
-using Geek.Server;
+using Geek.Client;
 using System.Collections.Generic;
 {{~ for use in usingspaces ~}}
 using {{use}};
@@ -38,8 +38,6 @@ namespace {{space}}
 	
     public class {{name}} : {{super}}
 	{
-		static readonly NLog.Logger LOGGER = NLog.LogManager.GetCurrentClassLogger();
-
 		{{~ for field in fields ~}}
 		{{~ if field.type == "list"~}}
 		public List<{{field.clsname1}}> {{field.name}} { get; set; } = new List<{{field.clsname1}}>();
@@ -386,7 +384,7 @@ namespace {{space}}
             {
                 if ({{field.name}}[i] == null)
                 {
-                    LOGGER.Error("App.Proto.Test3.List has null item, idx == " + i);
+                    UnityEngine.Debug.LogError("App.Proto.Test3.List has null item, idx == " + i);
                     XBuffer.WriteInt(0, _buffer_, ref _offset_);
                 }
                 else
@@ -432,7 +430,7 @@ namespace {{space}}
 
                 if (kv.Value == null)
                 {
-                    LOGGER.Error($"{this.GetType().FullName}.{{field.name}} has null item: {kv.Key}");
+                    UnityEngine.Debug.LogError($"{this.GetType().FullName}.{{field.name}} has null item: {kv.Key}");
                     XBuffer.WriteInt(0, _buffer_, ref _offset_);
                 }
                 else
@@ -484,7 +482,7 @@ namespace {{space}}
 				{
 					if (item == null)
 					{
-						LOGGER.Error($"{this.GetType().FullName}.{{field.name}}.{kv.Key} has null item");
+						UnityEngine.Debug.LogError($"{this.GetType().FullName}.{{field.name}}.{kv.Key} has null item");
 						XBuffer.WriteInt(0, _buffer_, ref _offset_);
 					}
 					else
@@ -549,7 +547,7 @@ namespace {{space}}
 
 					if (kv.Value == null)
 					{
-						LOGGER.Error($"{this.GetType().FullName}.{{field.name}} has null item: {kv2.Key.ToString()}");
+						UnityEngine.Debug.LogError($"{this.GetType().FullName}.{{field.name}} has null item: {kv2.Key.ToString()}");
 						XBuffer.WriteInt(0, _buffer_, ref _offset_);
 					}
 					else

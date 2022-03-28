@@ -31,6 +31,12 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <None Update="Configs\ClientTemplate\Factory.liquid">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Configs\ClientTemplate\Message.liquid">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
 	  <None Update="Configs\config.xml">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </None>

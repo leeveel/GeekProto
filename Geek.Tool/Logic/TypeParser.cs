@@ -12,9 +12,7 @@ namespace Tool.Logic
         public const string PropertyAttributeName = "SPropertyAttribute";
         public const string ClassAttributeName = "SClassAttribute";
 
-        public const string BaseName1 = "DBState";
-        public const string BaseName2 = "BaseDBState";
-        public const string BaseName3 = "Message";
+        public const string BaseMessage = "BaseMessage";
         public const string BaseSerializable = "Serializable";
         public const string BaseInterface = "Core.Serialize.ISerializable";
 
@@ -33,7 +31,7 @@ namespace Tool.Logic
             ct.fullname = type.FullName;
             ct.super = GetSuperName(type);
             ct.sid = GetPropertyValue<int>(catt, "Id");
-            if (ct.super.Equals(BaseName3))
+            if (ct.super.Equals(BaseMessage))
                 ct.msgid = ct.sid;
 
             var pros = type.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
@@ -258,27 +256,28 @@ namespace Tool.Logic
 
         public static string GetSuperName(Type type)
         {
-            string baseName = type.BaseType.Name;
+            //Message 之前不能相互继承
+            var att = GetClassAttribute(type);
+            if (att == null)
+                throw new Exception($"此类型不可序列化{type.FullName}");
+            bool isMsg = GetPropertyValue<bool>(att, "IsMsg");
+            if (isMsg) return BaseMessage;
 
+            string baseName = type.BaseType.Name;
             //没有任何基类，则默认继承Serializable
             if (baseName.Equals(typeof(object).Name))
                 return BaseSerializable;
 
-            if (baseName.Equals(BaseName1))
-                return BaseName1;
-            if (baseName.Equals(BaseName2))
-                return BaseName2;
-            if (baseName.Equals(BaseName3))
-                return BaseName3;
+            if (baseName.Equals(BaseMessage))
+                return BaseMessage;
             if (baseName.Equals(BaseSerializable))
                 return BaseSerializable;
 
-            string baseBaseName = type.BaseType.BaseType.Name;
-            //都不符合，则检查基类的基类是否为Object
-            if (baseBaseName.Equals(BaseSerializable) || baseBaseName.Equals(typeof(object).Name))
-                return baseName;
 
-            throw new Exception($"不合法的基类{type.BaseType.FullName}");
+            var baseAtt = GetClassAttribute(type.BaseType);
+            if (baseAtt == null)
+                throw new Exception($"不合法的基类{type.BaseType.FullName},基类不可序列化");
+            return baseName;
         }
 
         public static object GetClassAttribute(Type type)

@@ -1,6 +1,6 @@
 //auto generated, do not modify it
 
-using Core.Serialize;
+using Geek.Server;
 namespace Proto
 {
 	public class SClassFactory

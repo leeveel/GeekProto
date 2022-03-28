@@ -11,11 +11,13 @@ namespace Tool.Logic
         /// 工厂模板路径
         /// </summary>
         public static string FactoryTemplatePath { get; set; }
+        public static string ClientFactoryTemplatePath { get; set; }
 
         /// <summary>
         /// 消息模板路径
         /// </summary>
         public static string MessageTemplatePath { get; set; }
+        public static string ClientMessageTemplatePath { get; set; }
 
         /// <summary>
         /// proto dll path
@@ -54,8 +56,14 @@ namespace Tool.Logic
                         case "factory-template-path":
                             FactoryTemplatePath = node.InnerText;
                             break;
+                        case "client-factory-template-path":
+                            ClientFactoryTemplatePath = node.InnerText;
+                            break;
                         case "message-template-path":
                             MessageTemplatePath = node.InnerText;
+                            break;
+                        case "client-message-template-path":
+                            ClientMessageTemplatePath = node.InnerText;
                             break;
                         case "dll-path":
                             DllPath = node.InnerText;

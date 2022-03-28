@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Core.Serialize
+namespace Geek.Server
 {
     public interface ISerializable
     {

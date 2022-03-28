@@ -8,12 +8,6 @@ namespace Tool.Logic
 {
     public class ProtoGen
     {
-        private string dllPath;
-        private string outputPath;
-        private string msgTemplatePath;
-        private string factoryTemplatePath;
-        private string clientOutputPath;
-
         /// <summary>
         /// 0: 服务器 1：客户端 2：服务器+客户端
         /// </summary>
@@ -28,19 +22,11 @@ namespace Tool.Logic
         /// <param name="canUseID">预留DBState(mongodb主键)</param>
         public ProtoGen(int exportModel)
         {
-            this.dllPath = Setting.DllPath;
-            this.factoryTemplatePath = Setting.FactoryTemplatePath;
-            this.msgTemplatePath = Setting.MessageTemplatePath;
-            this.outputPath = Setting.ServerOutPath + Path.DirectorySeparatorChar;
-            this.clientOutputPath = Setting.ClientOutPath + Path.DirectorySeparatorChar;
             this.exportModel = exportModel;
         }
 
         public void Gen()
         {
-            outputPath.CreateAsDirectory();
-            Template template = Template.Parse(File.ReadAllText(msgTemplatePath));
-            Template factoryTemplate = Template.Parse(File.ReadAllText(factoryTemplatePath));
 
             var factory = new FactoryTemplate();
             var targetDll = LoadDll();
@@ -52,26 +38,35 @@ namespace Tool.Logic
                     continue;
                 factory.sclasses.Add(tp);
                 System.Console.WriteLine($"gen {type.Name}");
-                var str = template.Render(tp);
 
                 if (exportModel == 1 || exportModel == 3)
                 {
+                    Setting.ServerOutPath.CreateAsDirectory();
+                    Template template = Template.Parse(File.ReadAllText(Setting.MessageTemplatePath));
+                    Template factoryTemplate = Template.Parse(File.ReadAllText(Setting.FactoryTemplatePath));
+                    var str = template.Render(tp);
+
                     //导出服务器
-                    string filePath = outputPath + type.Name;
+                    string filePath = Setting.ServerOutPath + type.Name;
                     File.WriteAllText(filePath + ".cs", str);
 
-                    string factoryPath = outputPath + "SClassFactory.cs";
+                    string factoryPath = Setting.ServerOutPath + "SClassFactory.cs";
                     var fstr = factoryTemplate.Render(factory);
                     File.WriteAllText(factoryPath, fstr);
                 }
                 if (exportModel == 2 || exportModel == 3)
                 {
+                    Setting.ClientOutPath.CreateAsDirectory();
+                    Template template = Template.Parse(File.ReadAllText(Setting.ClientMessageTemplatePath));
+                    Template factoryTemplate = Template.Parse(File.ReadAllText(Setting.ClientFactoryTemplatePath));
+                    var str = template.Render(tp);
+
                     //导出客户端
-                    string filePath = clientOutputPath + type.Name;
+                    string filePath = Setting.ClientOutPath + type.Name;
                     filePath.CreateAsDirectory(true);
                     File.WriteAllText(filePath + ".cs", str);
 
-                    string factoryPath = clientOutputPath + "SClassFactory.cs";
+                    string factoryPath = Setting.ClientOutPath + "SClassFactory.cs";
                     factoryPath.CreateAsDirectory(true);
                     var fstr = factoryTemplate.Render(factory);
                     File.WriteAllText(factoryPath, fstr);
@@ -81,7 +76,7 @@ namespace Tool.Logic
 
         private Assembly LoadDll()
         {
-            var loader = new DllLoader(dllPath);
+            var loader = new DllLoader(Setting.DllPath);
             loader.Load();
 
             //依赖的dll
@@ -94,7 +89,8 @@ namespace Tool.Logic
             {
                 if (asbList.Contains(asb.Name))
                     continue;
-                var refPath = Environment.CurrentDirectory + $"/{asb.Name}.dll";
+                //var refPath = Environment.CurrentDirectory + $"/{asb.Name}.dll";
+                var refPath = Path.GetDirectoryName(Setting.DllPath) + $"/{asb.Name}.dll";
                 if (File.Exists(refPath))
                     Assembly.LoadFrom(refPath);
             }

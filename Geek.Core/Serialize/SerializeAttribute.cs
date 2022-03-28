@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Core.Serialize
+namespace Geek.Server
 {
 
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
@@ -9,12 +9,12 @@ namespace Core.Serialize
         /// <summary>
         /// 是否将ClassId作为消息ID
         /// </summary>
-        public bool AsMsgId { get; private set; } 
+        public bool IsMsg { get; private set; } 
         public int Id { get; private set; }
-        public SClassAttribute(int id, bool asMsgId=false)
+        public SClassAttribute(int id, bool isMsg=false)
         {
             Id = id;
-            AsMsgId = asMsgId;
+            IsMsg = isMsg;
         }
     }
 

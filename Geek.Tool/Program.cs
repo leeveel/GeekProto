@@ -9,7 +9,7 @@ namespace Geek.Tool
     class Program
     {
 
-        static bool isDebug = true;
+        static bool isDebug = false;
         static void Main(string[] args)
         {
             //初始化配置信息
