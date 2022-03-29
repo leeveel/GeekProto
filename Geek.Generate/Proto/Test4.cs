@@ -12,7 +12,7 @@ using System.Collections.Generic;
 namespace Geek.Server.Proto
 {
 	
-    public class Test4 : Serializable
+    public class Test4 : BaseMessage
 	{
 		static readonly NLog.Logger LOGGER = NLog.LogManager.GetCurrentClassLogger();
 
@@ -26,8 +26,10 @@ namespace Geek.Server.Proto
 		/*********************************************************/
 
 
+		public const int MsgID = SID;
 		public override int Sid { get;} = 111104;
 		public const int SID = 111104;
+		public const bool IsState = false;
 
 		public override T Create<T>(int sid)
         {
@@ -37,9 +39,8 @@ namespace Geek.Server.Proto
 		///<summary>反序列化，读取数据</summary>
         public override int Read(byte[] _buffer_, int _offset_)
 		{
+			UniId = XBuffer.ReadInt(_buffer_, ref _offset_);
 			_offset_ = base.Read(_buffer_, _offset_);
-			int _startOffset_ = _offset_;
-			int _toReadLength_ = XBuffer.ReadInt(_buffer_, ref _offset_);
 			
 			//字段个数,最多支持255个
 			var _fieldNum_ = XBuffer.ReadByte(_buffer_, ref _offset_);
@@ -82,9 +83,6 @@ namespace Geek.Server.Proto
 				}else break;
 			}while(false);
 			
-			//剔除多余数据
-			if(_offset_ < _toReadLength_ - _startOffset_)
-				_offset_ += _toReadLength_ - _startOffset_;
 			return _offset_;
 		}
 
@@ -92,10 +90,8 @@ namespace Geek.Server.Proto
 		///<summary>序列化，写入数据</summary>
         public override int Write(byte[] _buffer_, int _offset_)
         {	
+			XBuffer.WriteInt(UniId, _buffer_, ref _offset_);
 			_offset_ = base.Write(_buffer_, _offset_);
-			//先写入当前对象长度占位符
-			int _startOffset_ = _offset_;
-			XBuffer.WriteInt(0, _buffer_, ref _offset_);
 			
 			//写入字段数量,最多支持255个
 			XBuffer.WriteByte(3, _buffer_, ref _offset_);
@@ -125,8 +121,6 @@ namespace Geek.Server.Proto
 
 
 			
-			//覆盖当前对象长度
-			XBuffer.WriteInt(_offset_ - _startOffset_, _buffer_, ref _startOffset_);
 			return _offset_;
 		}
 	}

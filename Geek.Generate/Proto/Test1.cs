@@ -12,26 +12,92 @@ using System.Collections.Generic;
 namespace Geek.Server.Proto
 {
 	
+	[IsState]
     public class Test1 : Serializable
 	{
 		static readonly NLog.Logger LOGGER = NLog.LogManager.GetCurrentClassLogger();
 
 
 		/*********************************************************/
-		public long  Id {get;set;}
-		public string S1 {get;set;}
-		public int I1 {get;set;}
-		public bool B1 {get;set;}
-		public float F1 {get;set;}
-		public short S2 {get;set;}
-		public double D1 {get;set;}
-		public byte[] B2 {get;set;}
-		public string O1 {get;set;}
+		private long _Id_;
+		public long  Id 
+		{ 
+			get{ return _Id_; }
+			set{ _Id_= value; _stateChanged=true;}
+		}
+		private string _S1_;
+		public string S1 
+		{ 
+			get{ return _S1_; }
+			set{ _S1_= value; _stateChanged=true;}
+		}
+		private int _I1_;
+		public int I1 
+		{ 
+			get{ return _I1_; }
+			set{ _I1_= value; _stateChanged=true;}
+		}
+		private bool _B1_;
+		public bool B1 
+		{ 
+			get{ return _B1_; }
+			set{ _B1_= value; _stateChanged=true;}
+		}
+		private float _F1_;
+		public float F1 
+		{ 
+			get{ return _F1_; }
+			set{ _F1_= value; _stateChanged=true;}
+		}
+		private short _S2_;
+		public short S2 
+		{ 
+			get{ return _S2_; }
+			set{ _S2_= value; _stateChanged=true;}
+		}
+		private double _D1_;
+		public double D1 
+		{ 
+			get{ return _D1_; }
+			set{ _D1_= value; _stateChanged=true;}
+		}
+		private byte[] _B2_;
+		public byte[] B2 
+		{ 
+			get{ return _B2_; }
+			set{ _B2_= value; _stateChanged=true;}
+		}
+		private string _O1_;
+		public string O1 
+		{ 
+			get{ return _O1_; }
+			set{ _O1_= value; _stateChanged=true;}
+		}
+
+
+		
+		///<summary>状态是否改变</summary>
+		public override bool IsChanged
+		{
+			get
+			{
+				if(_stateChanged)
+					return true;
+				return false;
+			}
+		}
+		
+		///<summary>清除所有改变[含子项]</summary>
+		public override void ClearChanges()
+		{
+			_stateChanged = false;
+		}
 		/*********************************************************/
 
 
 		public override int Sid { get;} = 111101;
 		public const int SID = 111101;
+		public const bool IsState = true;
 
 		public override T Create<T>(int sid)
         {

@@ -32,9 +32,10 @@ namespace Tool.Logic
             if (ct.super.Equals(BaseMessage))
                 ct.msgid = ct.sid;
 
-            var isState = GetPropertyValue<bool>(catt, "IsState");
-            ct.isstate = isState;
-            if (isState)
+            var satt = GetClassAttribute(type, "IsStateAttribute");
+            if(satt != null)
+                ct.isstate = true;
+            if (ct.isstate)
             {
                 ct.listname = "StateList";
                 ct.linklistname = "StateLinkedList";
@@ -311,13 +312,12 @@ namespace Tool.Logic
             return baseName;
         }
 
-        public static object GetClassAttribute(Type type)
+        public static object GetClassAttribute(Type type, string name = ClassAttributeName)
         {
             var att = type.GetCustomAttributes();
             foreach (var item in att)
             {
-                //if (item.GetType().Name.Contains("SClassAttribute"))
-                if (item.GetType().Name.Equals(ClassAttributeName))
+                if (item.GetType().Name.Equals(name))
                     return item;
             }
             return null;

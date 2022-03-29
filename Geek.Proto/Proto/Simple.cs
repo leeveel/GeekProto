@@ -5,7 +5,8 @@ using Geek.Server;
 
 namespace Geek.Server.Proto
 {
-    [SClass(SID._111101)]
+	[IsState]
+    [SClass(SID._111101, false)]
 	public class Test1
 	{
 		[SProperty(0)]
@@ -36,7 +37,7 @@ namespace Geek.Server.Proto
 		public string O1 { get; set; }
 	}
 
-    [SClass(SID._111102, false, true)]
+    [SClass(SID._111102)]
     public class Test2 : Test1
     {
         [SProperty(0)]
