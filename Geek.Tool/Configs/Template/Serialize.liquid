@@ -33,13 +33,11 @@ namespace Proto
 
 
 
-
-
-
         #region Read
         public static T Create<T>(int sid) where T : Serializable
         {
-            return SClassFactory.Create<T>(sid);
+            return null;
+            //return SClassFactory.Create<T>(sid);
         }
 
         public static T ReadCustom<T>(T target, bool optional, byte[] buffer, ref int offset) where T : Serializable

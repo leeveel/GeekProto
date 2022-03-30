@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Scriban;
+using System;
+using System.IO;
 using Tool.Logic;
 using Tool.Test;
 
@@ -50,6 +52,7 @@ namespace Geek.Tool
                 Console.WriteLine("1.测试序列化");
                 Console.WriteLine("2.性能测试");
                 Console.WriteLine("3.导出协议代码");
+                Console.WriteLine("4.导出工具类");
                 Console.WriteLine("-------------------------------------------");
                 Test001 test = new Test001();
                 while (true)
@@ -66,6 +69,27 @@ namespace Geek.Tool
                             break;
                         case '3':
                             new ProtoGen(1).Gen();
+                            break;
+                        case '4':
+                            string serializeTemplatePath = @"Configs\Template\Serialize.liquid";
+                            Template serializeTemplate = Template.Parse(File.ReadAllText(serializeTemplatePath));
+
+                            var typeTemp = new TypeTemplate();
+                            typeTemp.typelist.Add("byte");
+                            typeTemp.typelist.Add("sbyte");
+                            typeTemp.typelist.Add("bool");
+                            typeTemp.typelist.Add("short");
+                            typeTemp.typelist.Add("int");
+                            typeTemp.typelist.Add("long");
+                            typeTemp.typelist.Add("float");
+                            typeTemp.typelist.Add("double");
+                            typeTemp.typelist.Add("string");
+                            //typeTemp.typelist.Add("byte[]");
+
+                            string outPath = @"..\Geek.Core\Serialize\SerializeTools.cs";
+                            var str = serializeTemplate.Render(typeTemp);
+                            File.WriteAllText(outPath, str);
+
                             break;
                     }
                 }
