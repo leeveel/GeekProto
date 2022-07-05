@@ -77,6 +77,7 @@ namespace Geek.Server
             return null;
         }
 
+        #region span
         protected virtual T ReadCustom<T>(T val, Span<byte> buffer, ref int offset) where T : Serializable
         {
             var hasVal = XBuffer.ReadBool(buffer, ref offset);
@@ -101,13 +102,6 @@ namespace Geek.Server
             return offset;
         }
 
-        protected virtual int GetCustomLength<T>(T val) where T : Serializable
-        {
-            if (val == null)
-                return XBuffer.BoolSize;
-            return XBuffer.BoolSize + XBuffer.IntSize + val.GetSerializeLength(); //hasval + sid + length
-        }
-
         protected virtual int WriteCollection<T>(T val, Span<byte> buffer, ref int offset)
         {
             var formmater = SerializerOptions.Resolver.GetFormatter<T>();
@@ -119,6 +113,53 @@ namespace Geek.Server
         {
             var formmater = SerializerOptions.Resolver.GetFormatter<T>();
             return formmater.Deserialize(buffer, ref offset);
+        }
+        #endregion
+
+        #region buffer
+        protected virtual T ReadCustom<T>(T val, byte[] buffer, ref int offset) where T : Serializable
+        {
+            var hasVal = XBuffer.ReadBool(buffer, ref offset);
+            if (hasVal)
+            {
+                var sid = XBuffer.ReadInt(buffer, ref offset);
+                val = Create<T>(sid);
+                offset = val.Read(buffer, offset);
+            }
+            return val;
+        }
+
+        protected virtual int WriteCustom<T>(T val, byte[] buffer, ref int offset) where T : Serializable
+        {
+            bool hasVal = val != null;
+            XBuffer.WriteBool(hasVal, buffer, ref offset);
+            if (hasVal)
+            {
+                XBuffer.WriteInt(val.Sid, buffer, ref offset);
+                offset = val.Write(buffer, offset);
+            }
+            return offset;
+        }
+
+        protected virtual int WriteCollection<T>(T val, byte[] buffer, ref int offset)
+        {
+            var formmater = SerializerOptions.Resolver.GetFormatter<T>();
+            formmater.Serialize(buffer, val, ref offset);
+            return offset;
+        }
+
+        protected virtual T ReadCollection<T>(byte[] buffer, ref int offset)
+        {
+            var formmater = SerializerOptions.Resolver.GetFormatter<T>();
+            return formmater.Deserialize(buffer, ref offset);
+        }
+        #endregion
+
+        protected virtual int GetCustomLength<T>(T val) where T : Serializable
+        {
+            if (val == null)
+                return XBuffer.BoolSize;
+            return XBuffer.BoolSize + XBuffer.IntSize + val.GetSerializeLength(); //hasval + sid + length
         }
 
         protected virtual int GetCollectionLength<T>(T val)

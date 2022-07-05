@@ -311,7 +311,7 @@ namespace Geek.Server
 
         #region WriteSpan
 
-
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe void WriteDateTime(DateTime value, Span<byte> buffer, ref int offset)
         {
             if (offset + LongSize > buffer.Length)
@@ -326,6 +326,7 @@ namespace Geek.Server
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe void WriteChar(char value, Span<byte> buffer, ref int offset)
         {
             if (offset + CharSize > buffer.Length)
@@ -355,6 +356,7 @@ namespace Geek.Server
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe void WriteUInt(uint value, Span<byte> buffer, ref int offset)
         {
             if (offset + UIntSize > buffer.Length)
@@ -369,6 +371,7 @@ namespace Geek.Server
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe void WriteShort(short value, Span<byte> buffer, ref int offset)
         {
             if (offset + ShortSize > buffer.Length)
@@ -383,6 +386,7 @@ namespace Geek.Server
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe void WriteUShort(ushort value, Span<byte> buffer, ref int offset)
         {
             if (offset + UShortSize > buffer.Length)
@@ -397,6 +401,7 @@ namespace Geek.Server
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe void WriteLong(long value, Span<byte> buffer, ref int offset)
         {
             if (offset + LongSize > buffer.Length)
@@ -411,6 +416,7 @@ namespace Geek.Server
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe void WriteULong(ulong value, Span<byte> buffer, ref int offset)
         {
             if (offset + ULongSize > buffer.Length)
@@ -425,6 +431,7 @@ namespace Geek.Server
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe void WriteFloat(float value, Span<byte> buffer, ref int offset)
         {
             if (offset + FloatSize > buffer.Length)
@@ -440,6 +447,7 @@ namespace Geek.Server
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe void WriteDouble(double value, Span<byte> buffer, ref int offset)
         {
             if (offset + DoubleSize > buffer.Length)
@@ -455,6 +463,7 @@ namespace Geek.Server
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe void WriteByte(byte value, Span<byte> buffer, ref int offset)
         {
             if (offset + ByteSize > buffer.Length)
@@ -469,6 +478,7 @@ namespace Geek.Server
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe void WriteBytes(byte[] value, Span<byte> buffer, ref int offset)
         {
             if (value == null)
@@ -491,6 +501,7 @@ namespace Geek.Server
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe void WriteBytesWithoutLength(byte[] value, Span<byte> buffer, ref int offset)
         {
             if (value == null)
@@ -508,6 +519,7 @@ namespace Geek.Server
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe void WriteSByte(sbyte value, Span<byte> buffer, ref int offset)
         {
             if (offset + SbyteSize > buffer.Length)
@@ -548,6 +560,7 @@ namespace Geek.Server
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe void WriteBool(bool value, Span<byte> buffer, ref int offset)
         {
             if (offset + BoolSize > buffer.Length)
@@ -566,6 +579,7 @@ namespace Geek.Server
         #endregion
 
         #region ReadSpan
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe DateTime ReadDateTime(Span<byte> buffer, ref int offset)
         {
             if (offset + LongSize > buffer.Length)
@@ -580,6 +594,7 @@ namespace Geek.Server
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe char ReadChar(Span<byte> buffer, ref int offset)
         {
             if (offset + CharSize > buffer.Length)
@@ -607,6 +622,7 @@ namespace Geek.Server
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe uint ReadUInt(Span<byte> buffer, ref int offset)
         {
             if (offset + UIntSize > buffer.Length)
@@ -620,6 +636,7 @@ namespace Geek.Server
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe short ReadShort(Span<byte> buffer, ref int offset)
         {
             if (offset + ShortSize > buffer.Length)
@@ -633,6 +650,7 @@ namespace Geek.Server
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe ushort ReadUShort(Span<byte> buffer, ref int offset)
         {
             if (offset + UShortSize > buffer.Length)
@@ -646,6 +664,7 @@ namespace Geek.Server
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe long ReadLong(Span<byte> buffer, ref int offset)
         {
             if (offset + LongSize > buffer.Length)
@@ -659,6 +678,7 @@ namespace Geek.Server
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe ulong ReadULong(Span<byte> buffer, ref int offset)
         {
             if (offset + ULongSize > buffer.Length)
@@ -672,6 +692,7 @@ namespace Geek.Server
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe float ReadFloat(Span<byte> buffer, ref int offset)
         {
             if (offset + FloatSize > buffer.Length)
@@ -686,6 +707,7 @@ namespace Geek.Server
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe double ReadDouble(Span<byte> buffer, ref int offset)
         {
             if (offset + DoubleSize > buffer.Length)
@@ -700,6 +722,7 @@ namespace Geek.Server
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe byte ReadByte(Span<byte> buffer, ref int offset)
         {
             if (offset + ByteSize > buffer.Length)
@@ -713,6 +736,7 @@ namespace Geek.Server
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe byte[] ReadBytes(Span<byte> buffer, ref int offset)
         {
             bool hasVal = ReadBool(buffer, ref offset);
@@ -730,6 +754,7 @@ namespace Geek.Server
             return null;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe sbyte ReadSByte(Span<byte> buffer, ref int offset)
         {
             if (offset + ByteSize > buffer.Length)
@@ -742,7 +767,6 @@ namespace Geek.Server
                 return value;
             }
         }
-
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe string ReadString(Span<byte> buffer, ref int offset)
@@ -764,6 +788,7 @@ namespace Geek.Server
             return null;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe bool ReadBool(Span<byte> buffer, ref int offset)
         {
             if (offset + BoolSize > buffer.Length)
@@ -776,6 +801,226 @@ namespace Geek.Server
                 return value;
             }
         }
+        #endregion
+
+        #region IBufferWriter
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe void WriteDateTime(DateTime value, IBufferWriter<byte> writer, ref int offset)
+        {
+            var buffer = writer.GetSpan(LongSize);
+            fixed (byte* ptr = buffer)
+            {
+                *(long*)(ptr + offset) = HostToNetworkOrder(value.Ticks);
+                offset += LongSize;
+                writer.Advance(LongSize);
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe void WriteChar(char value, IBufferWriter<byte> writer, ref int offset)
+        {
+            var buffer = writer.GetSpan(CharSize);
+            fixed (byte* ptr = buffer)
+            {
+                *(short*)(ptr + offset) = HostToNetworkOrder((short)value);
+                offset += CharSize;
+                writer.Advance(CharSize);
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe void WriteInt(int value, IBufferWriter<byte> writer, ref int offset)
+        {
+            var buffer = writer.GetSpan(IntSize);
+            fixed (byte* ptr = buffer)
+            {
+                *(int*)(ptr + offset) = HostToNetworkOrder(value);
+                offset += IntSize;
+                writer.Advance(IntSize);
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe void WriteUInt(uint value, IBufferWriter<byte> writer, ref int offset)
+        {
+            var buffer = writer.GetSpan(UIntSize);
+            fixed (byte* ptr = buffer)
+            {
+                *(uint*)(ptr + offset) = HostToNetworkOrder(value);
+                offset += UIntSize;
+                writer.Advance(UIntSize);
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe void WriteShort(short value, IBufferWriter<byte> writer, ref int offset)
+        {
+            var buffer = writer.GetSpan(ShortSize);
+            fixed (byte* ptr = buffer)
+            {
+                *(short*)(ptr + offset) = HostToNetworkOrder(value);
+                offset += ShortSize;
+                writer.Advance(ShortSize);
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe void WriteUShort(ushort value, IBufferWriter<byte> writer, ref int offset)
+        {
+            var buffer = writer.GetSpan(UShortSize);
+            fixed (byte* ptr = buffer)
+            {
+                *(ushort*)(ptr + offset) = HostToNetworkOrder(value);
+                offset += UShortSize;
+                writer.Advance(UShortSize);
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe void WriteLong(long value, IBufferWriter<byte> writer, ref int offset)
+        {
+            var buffer = writer.GetSpan(LongSize);
+            fixed (byte* ptr = buffer)
+            {
+                *(long*)(ptr + offset) = HostToNetworkOrder(value);
+                offset += LongSize;
+                writer.Advance(LongSize);
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe void WriteULong(ulong value, IBufferWriter<byte> writer, ref int offset)
+        {
+            var buffer = writer.GetSpan(ULongSize);
+            fixed (byte* ptr = buffer)
+            {
+                *(ulong*)(ptr + offset) = HostToNetworkOrder(value);
+                offset += ULongSize;
+                writer.Advance(ULongSize);
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe void WriteFloat(float value, IBufferWriter<byte> writer, ref int offset)
+        {
+            var buffer = writer.GetSpan(FloatSize);
+            fixed (byte* ptr = buffer)
+            {
+                *(float*)(ptr + offset) = value;
+                *(int*)(ptr + offset) = HostToNetworkOrder(*(int*)(ptr + offset));
+                offset += FloatSize;
+                writer.Advance(FloatSize);
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe void WriteDouble(double value, IBufferWriter<byte> writer, ref int offset)
+        {
+            var buffer = writer.GetSpan(DoubleSize);
+            fixed (byte* ptr = buffer)
+            {
+                *(double*)(ptr + offset) = value;
+                *(long*)(ptr + offset) = HostToNetworkOrder(*(long*)(ptr + offset));
+                offset += DoubleSize;
+                writer.Advance(DoubleSize);
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe void WriteByte(byte value, IBufferWriter<byte> writer, ref int offset)
+        {
+            var buffer = writer.GetSpan(ByteSize);
+            fixed (byte* ptr = buffer)
+            {
+                *(ptr + offset) = value;
+                offset += ByteSize;
+                writer.Advance(ByteSize);
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe void WriteBytes(byte[] value, IBufferWriter<byte> writer, ref int offset)
+        {
+            if (value == null)
+            {
+                var span = writer.GetSpan(BoolSize);
+                WriteBool(false, span, ref offset);
+                return;
+            }
+            int len = BoolSize + IntSize + value.Length;
+            var buffer = writer.GetSpan(len);
+            WriteBool(true, buffer, ref offset);
+            WriteInt(value.Length, buffer, ref offset);
+            fixed (byte* ptr = buffer, valPtr = value)
+            {
+                Buffer.MemoryCopy(valPtr, ptr + offset, value.Length, value.Length);
+                offset += value.Length;
+                writer.Advance(len);
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe void WriteBytesWithoutLength(byte[] value, IBufferWriter<byte> writer, ref int offset)
+        {
+            if (value == null)
+                return;
+            var buffer = writer.GetSpan(value.Length);
+            fixed (byte* ptr = buffer, valPtr = value)
+            {
+                Buffer.MemoryCopy(valPtr, ptr + offset, value.Length, value.Length);
+                offset += value.Length;
+                writer.Advance(value.Length);
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe void WriteSByte(sbyte value, IBufferWriter<byte> writer, ref int offset)
+        {
+            var buffer = writer.GetSpan(SbyteSize);
+            fixed (byte* ptr = buffer)
+            {
+                *(sbyte*)(ptr + offset) = value;
+                offset += SbyteSize;
+                writer.Advance(SbyteSize);
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe void WriteString(string value, IBufferWriter<byte> writer, ref int offset)
+        {
+            if (value == null)
+            {
+                var span = writer.GetSpan(BoolSize);
+                WriteBool(false, span, ref offset);
+                return;
+            }
+
+            int len = System.Text.Encoding.UTF8.GetByteCount(value);
+            int spanLen = len + BoolSize + IntSize;
+            var buffer = writer.GetSpan(spanLen);
+            WriteBool(true, buffer, ref offset);
+            WriteInt(len, buffer, ref offset);
+            var val = System.Text.Encoding.UTF8.GetBytes(value);
+            fixed (byte* ptr = buffer, valPtr = val)
+            {
+                Buffer.MemoryCopy(valPtr, ptr + offset, len, len);
+                offset += len;
+                writer.Advance(spanLen);
+            }
+        }
+
+        public static unsafe void WriteBool(bool value, IBufferWriter<byte> writer, ref int offset)
+        {
+            var buffer = writer.GetSpan(BoolSize);
+            fixed (byte* ptr = buffer)
+            {
+                *(bool*)(ptr + offset) = value;
+                offset += BoolSize;
+                writer.Advance(BoolSize);
+            }
+        }
+
         #endregion
 
         #region WriteByteArray
