@@ -16,6 +16,9 @@ namespace Geek.Server.Proto
 				case 111103: return new Geek.Server.Proto.Test3();
 				case 111104: return new Geek.Server.Proto.Test4();
 				case 111105: return new Geek.Server.Proto.ReqTest();
+				case 9998: return new Geek.Server.Proto.My1();
+				case 9999: return new Geek.Server.Proto.ReqLogin();
+				case 200001: return new Geek.Server.Proto.Test5();
 				default: return default;
 			}
 		}

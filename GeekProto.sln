@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31515.178
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32519.379
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Geek.Proto", "Geek.Proto\Geek.Proto.csproj", "{D20A9759-51E5-4507-9C21-3694107DE505}"
 EndProject
@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Geek.Tool", "Geek.Tool\Geek
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Geek.Core", "Geek.Core\Geek.Core.csproj", "{81225E23-18B1-41E6-8C39-B364F0A5EE3B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Geek.Generate", "Geek.Generate\Geek.Generate.csproj", "{46EB738F-ACE8-46E3-B403-78D6D33F370F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Geek.Generate", "Geek.Generate\Geek.Generate.csproj", "{46EB738F-ACE8-46E3-B403-78D6D33F370F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Geek.Test", "Geek.Test\Geek.Test.csproj", "{2ED0B00E-1DE1-450D-8822-C072BCF69BFC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{46EB738F-ACE8-46E3-B403-78D6D33F370F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{46EB738F-ACE8-46E3-B403-78D6D33F370F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{46EB738F-ACE8-46E3-B403-78D6D33F370F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2ED0B00E-1DE1-450D-8822-C072BCF69BFC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2ED0B00E-1DE1-450D-8822-C072BCF69BFC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2ED0B00E-1DE1-450D-8822-C072BCF69BFC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2ED0B00E-1DE1-450D-8822-C072BCF69BFC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

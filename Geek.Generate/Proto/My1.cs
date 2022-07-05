@@ -14,25 +14,31 @@ using System.Collections.Generic;
 ///<summary></summary>
 namespace Geek.Server.Proto
 {
-    public class Test4 : BaseMessage
+    public class My1 : BaseMessage
 	{
 
-		static Test4()
+		static My1()
 		{
 			Geek.Server.SerializerOptions.Resolver = Geek.Server.Proto.SerializeResolver.Instance;
 		}
 
 
 		/*********************************************************/
-		public Geek.Server.Proto.Test1 T1 {get;set;}
-		public Geek.Server.Proto.Test2 T2 {get;set;}
-		public Dictionary<Int32, String> Map {get;set;}
+		public long Id {get;set;}
+		public string S1 {get;set;}
+		public int I1 {get;set;}
+		public bool B1 {get;set;}
+		public float F1 {get;set;}
+		public short S2 {get;set;}
+		public double D1 {get;set;}
+		public byte[] B2 {get;set;}
+		public string O1 {get;set;}
 		/*********************************************************/
 
 
 		public const int MsgID = SID;
-		public override int Sid { get;} = 111104;
-		public const int SID = 111104;
+		public override int Sid { get;} = 9998;
+		public const int SID = 9998;
 		public const bool IsState = false;
 
 		public override T Create<T>(int sid)
@@ -52,32 +58,55 @@ namespace Geek.Server.Proto
 			do {
 				if(_fieldNum_ > 0)
 				{
-					T1 = ReadCustom<Geek.Server.Proto.Test1>(T1, _buffer_, ref _offset_);
+					Id = XBuffer.ReadLong(_buffer_, ref _offset_);
 
 
 				}else break;
 				if(_fieldNum_ > 1)
 				{
-					T2 = ReadCustom<Geek.Server.Proto.Test2>(T2, _buffer_, ref _offset_);
+					S1 = XBuffer.ReadString(_buffer_, ref _offset_);
 
 
 				}else break;
 				if(_fieldNum_ > 2)
 				{
+					I1 = XBuffer.ReadInt(_buffer_, ref _offset_);
 
-					var hasVal = XBuffer.ReadBool(_buffer_, ref _offset_);
-					if(hasVal)
-					{
-						Map = new Dictionary<Int32, String>();
-						int count2 = XBuffer.ReadInt(_buffer_, ref _offset_);
-						for (int i = 0; i < count2; ++i)
-						{
-							var key = XBuffer.ReadInt(_buffer_, ref _offset_);
-							var val = XBuffer.ReadString(_buffer_, ref _offset_);
-							Map.Add(key, val);
-						}
-					}
 
+				}else break;
+				if(_fieldNum_ > 3)
+				{
+					B1 = XBuffer.ReadBool(_buffer_, ref _offset_);
+
+
+				}else break;
+				if(_fieldNum_ > 4)
+				{
+					F1 = XBuffer.ReadFloat(_buffer_, ref _offset_);
+
+
+				}else break;
+				if(_fieldNum_ > 5)
+				{
+					S2 = XBuffer.ReadShort(_buffer_, ref _offset_);
+
+
+				}else break;
+				if(_fieldNum_ > 6)
+				{
+					D1 = XBuffer.ReadDouble(_buffer_, ref _offset_);
+
+
+				}else break;
+				if(_fieldNum_ > 7)
+				{
+					B2 = XBuffer.ReadBytes(_buffer_, ref _offset_);
+
+
+				}else break;
+				if(_fieldNum_ > 8)
+				{
+					O1 = XBuffer.ReadString(_buffer_, ref _offset_);
 
 
 				}else break;
@@ -94,32 +123,35 @@ namespace Geek.Server.Proto
 			_offset_ = base.Write(_buffer_, _offset_);
 			
 			//写入字段数量,最多支持255个
-			XBuffer.WriteByte(3, _buffer_, ref _offset_);
+			XBuffer.WriteByte(9, _buffer_, ref _offset_);
 			
 			//写入数据
 
-			WriteCustom<Geek.Server.Proto.Test1>(T1, _buffer_, ref _offset_);
-			
-
-			WriteCustom<Geek.Server.Proto.Test2>(T2, _buffer_, ref _offset_);
-			
+			XBuffer.WriteLong(Id, _buffer_, ref _offset_);
 
 
-			if(Map == null)
-			{
-			    XBuffer.WriteBool(false, _buffer_, ref _offset_);
-			}
-			else
-			{
-			    XBuffer.WriteBool(true, _buffer_, ref _offset_);
-			    XBuffer.WriteInt(Map.Count, _buffer_, ref _offset_);
-			    foreach (var kv in Map)
-			    {
-				    XBuffer.WriteInt(kv.Key, _buffer_, ref _offset_);
-				    XBuffer.WriteString(kv.Value, _buffer_, ref _offset_);
-			    }
-			}
+			XBuffer.WriteString(S1, _buffer_, ref _offset_);
 
+
+			XBuffer.WriteInt(I1, _buffer_, ref _offset_);
+
+
+			XBuffer.WriteBool(B1, _buffer_, ref _offset_);
+
+
+			XBuffer.WriteFloat(F1, _buffer_, ref _offset_);
+
+
+			XBuffer.WriteShort(S2, _buffer_, ref _offset_);
+
+
+			XBuffer.WriteDouble(D1, _buffer_, ref _offset_);
+
+
+			XBuffer.WriteBytes(B2, _buffer_, ref _offset_);
+
+
+			XBuffer.WriteString(O1, _buffer_, ref _offset_);
 
 			
 			return _offset_;
@@ -135,37 +167,24 @@ namespace Geek.Server.Proto
 
 			len += XBuffer.ByteSize; //_fieldNum_
 
-			//T1
-			len += GetCustomLength<Geek.Server.Proto.Test1>(T1);
-			//T2
-			len += GetCustomLength<Geek.Server.Proto.Test2>(T2);
-			//Map
-			
-			if (Map == null)
-			{
-				len += XBuffer.BoolSize; //hasVal 
-			}
-			else
-			{
-				len += XBuffer.BoolSize + XBuffer.IntSize; //count
-				if(Map.Count > 0)
-				{
-					len += Map.Count * XBuffer.IntSize;
-			
-					foreach (var keypair in Map)
-					{
-			
-			
-						len += XBuffer.GetStringSerializeLength(keypair.Value);
-			
-					}
-				}
-			}
-			
-			
-			
-			
-
+			//Id
+			len += XBuffer.LongSize;
+			//S1
+			len += XBuffer.GetStringSerializeLength(S1);
+			//I1
+			len += XBuffer.IntSize;
+			//B1
+			len += XBuffer.BoolSize;
+			//F1
+			len += XBuffer.FloatSize;
+			//S2
+			len += XBuffer.ShortSize;
+			//D1
+			len += XBuffer.DoubleSize;
+			//B2
+			len += XBuffer.GetByteArraySerializeLength(B2);
+			//O1
+			len += XBuffer.GetStringSerializeLength(O1);
 
 			return len;
 		}

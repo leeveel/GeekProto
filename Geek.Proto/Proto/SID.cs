@@ -6,6 +6,15 @@
     /// </summary>
     public class SID
     {
+
+        /// <summary>
+        /// 枚举通用ID
+        /// </summary>
+        public const int Enum = -1000;
+
+        public const int _9999 = 9999;
+        public const int _9998 = 9998;
+
         public const int _111101 = 111101;
         public const int _111102 = 111102;
         public const int _111103 = 111103;

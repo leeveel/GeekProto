@@ -11,7 +11,7 @@ namespace Geek.Server
     public class IsStateAttribute : Attribute { }
 
 
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Enum, AllowMultiple = true)]
     public class SClassAttribute : Attribute
     {
         /// <summary>

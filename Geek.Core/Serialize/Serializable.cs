@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Text;
+using MessagePack;
 
 namespace Geek.Server
 {
@@ -11,10 +9,8 @@ namespace Geek.Server
     /// </summary>
     public abstract class Serializable : ISerializable
     {
-
-        static readonly NLog.Logger LOGGER = NLog.LogManager.GetCurrentClassLogger();
-
         protected bool _stateChanged;
+        [IgnoreMember]
         public virtual bool IsChanged { get { return _stateChanged; } }
 
         /// <summary>需要在actor线程内部调用才安全</summary>
@@ -23,38 +19,43 @@ namespace Geek.Server
 
         public virtual int Read(byte[] buffer, int offset)
         {
-            return offset;
+            return Read(new Span<byte>(buffer), offset);
         }
 
         public virtual int Write(byte[] buffer, int offset)
         {
+            return Write(new Span<byte>(buffer), offset);
+        }
+
+        public virtual int Read(Span<byte> buffer, int offset)
+        {
             return offset;
+        }
+
+        public virtual int Write(Span<byte> buffer, int offset)
+        {
+            return offset;
+        }
+
+        public virtual int GetSerializeLength()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Serialize(Span<byte> span, int offset = 0)
+        {
+            Write(span, offset);
         }
 
         public byte[] Serialize()
         {
-            return WriteAsBuffer(512);
-        }
-
-        protected virtual byte[] WriteAsBuffer(int size)
-        {
+            int size = GetSerializeLength();
             var data = new byte[size];
-            var offset = 0;
-            offset = this.Write(data, offset);
-            if (offset <= data.Length)
-            {
-                if (offset < data.Length)
-                {
-                    var ret = new byte[offset];
-                    Array.Copy(data, 0, ret, 0, offset);
-                    data = ret;
-                }
-                return data;
-            }
-            else
-            {
-                return WriteAsBuffer(offset);
-            }
+            int offset = 0;
+            offset = Write(data, offset);
+            if (offset != size)
+                throw new Exception($"{GetType().FullName}.GetSerializeLength 计算错误=>{size}:{offset}");
+            return data;
         }
 
         public void Deserialize(byte[] data)
@@ -62,6 +63,13 @@ namespace Geek.Server
             this.Read(data, 0);
         }
 
+        public void Deserialize(Span<byte> data)
+        {
+            this.Read(data, 0);
+        }
+
+
+        [IgnoreMember]
         public virtual int Sid { get; }
 
         public virtual T Create<T>(int sid) where T : Serializable
@@ -69,63 +77,55 @@ namespace Geek.Server
             return null;
         }
 
-        protected virtual List<T> GetList<T>()
+        protected virtual T ReadCustom<T>(T val, Span<byte> buffer, ref int offset) where T : Serializable
         {
-            return new List<T>();
-        }
-
-        protected virtual HashSet<T> GetSet<T>()
-        {
-            return new HashSet<T>();
-        }
-
-        protected virtual Dictionary<K, V> GetMap<K, V>()
-        {
-            return new Dictionary<K, V>();
-        }
-
-
-        protected virtual T ReadCustom<T>(T target, bool optional, byte[] buffer, ref int offset) where T : Serializable
-        {
-            if (optional)
-            {
-                var hasVal = XBuffer.ReadBool(buffer, ref offset);
-                if (hasVal)
-                {
-                    var sid = XBuffer.ReadInt(buffer, ref offset);
-                    target = Create<T>(sid);
-                    offset = target.Read(buffer, offset);
-                }
-            }
-            else
+            var hasVal = XBuffer.ReadBool(buffer, ref offset);
+            if (hasVal)
             {
                 var sid = XBuffer.ReadInt(buffer, ref offset);
-                target = Create<T>(sid);
-                offset = target.Read(buffer, offset);
+                val = Create<T>(sid);
+                offset = val.Read(buffer, offset);
             }
-            return target;
+            return val;
         }
 
-        protected virtual int WriteCustom<T>(T target, bool optional, byte[] buffer, ref int offset) where T : Serializable
+        protected virtual int WriteCustom<T>(T val, Span<byte> buffer, ref int offset) where T : Serializable
         {
-            if (optional)
+            bool hasVal = val != null;
+            XBuffer.WriteBool(hasVal, buffer, ref offset);
+            if (hasVal)
             {
-                bool hasVal = target != default;
-                XBuffer.WriteBool(hasVal, buffer, ref offset);
-                if (hasVal)
-                {
-                    XBuffer.WriteInt(target.Sid, buffer, ref offset);
-                    offset = target.Write(buffer, offset);
-                }
-            }
-            else
-            {
-                XBuffer.WriteInt(target.Sid, buffer, ref offset);
-                offset = target.Write(buffer, offset);
+                XBuffer.WriteInt(val.Sid, buffer, ref offset);
+                offset = val.Write(buffer, offset);
             }
             return offset;
         }
 
+        protected virtual int GetCustomLength<T>(T val) where T : Serializable
+        {
+            if (val == null)
+                return XBuffer.BoolSize;
+            return XBuffer.BoolSize + XBuffer.IntSize + val.GetSerializeLength(); //hasval + sid + length
+        }
+
+        protected virtual int WriteCollection<T>(T val, Span<byte> buffer, ref int offset)
+        {
+            var formmater = SerializerOptions.Resolver.GetFormatter<T>();
+            formmater.Serialize(buffer, val, ref offset);
+            return offset;
+        }
+
+        protected virtual T ReadCollection<T>(Span<byte> buffer, ref int offset)
+        {
+            var formmater = SerializerOptions.Resolver.GetFormatter<T>();
+            return formmater.Deserialize(buffer, ref offset);
+        }
+
+        protected virtual int GetCollectionLength<T>(T val)
+        {
+            var formmater = SerializerOptions.Resolver.GetFormatter<T>();
+            return formmater.GetSerializeLength(val);
+        }
 
     }
 }

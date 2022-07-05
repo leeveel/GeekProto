@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
   </PropertyGroup>
 
 	<PropertyGroup>
@@ -18,9 +18,10 @@
 		<OutputPath>..\_release</OutputPath>
 	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="MongoDB.Bson" Version="2.15.0" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="MongoDB.Bson" Version="2.15.0" />
+		<PackageReference Include="MessagePack" Version="2.3.85" />
+	</ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Geek.Core\Geek.Core.csproj" />

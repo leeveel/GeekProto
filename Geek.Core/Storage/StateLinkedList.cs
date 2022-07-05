@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Geek.Server
 {
-    public sealed class StateLinkedList<T> : BaseDBState, IEnumerable<T>
+    public sealed class StateLinkedList<T> : BaseDBState, IEnumerable<T>, ICollection<T>
     {
         readonly LinkedList<T> list;
         public StateLinkedList()
@@ -61,6 +61,10 @@ namespace Geek.Server
             }
         }
 
+        void ICollection<T>.Add(T value)
+        {
+            AddLast(value);
+        }
 
         public void AddLast(T item)
         {
@@ -182,6 +186,8 @@ namespace Geek.Server
             get { return list.Count; }
         }
 
+        public bool IsReadOnly => false;
+
         public IEnumerator<T> GetEnumerator()
         {
 #if DEBUG_MODE
@@ -220,6 +226,11 @@ namespace Geek.Server
             {
                 list.Remove(node);
             }
+        }
+
+        public void CopyTo(T[] array, int arrayIndex)
+        {
+            list.CopyTo(array, arrayIndex); 
         }
 
         public static implicit operator StateLinkedList<T>(LinkedList<T> list)

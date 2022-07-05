@@ -12,6 +12,11 @@ namespace Geek.Server
             list = new List<T>();
         }
 
+        public StateList(int capacity)
+        {
+            list = new List<T>(capacity);
+        }
+
         public StateList(IEnumerable<T> collection)
         {
             list = new List<T>(collection);

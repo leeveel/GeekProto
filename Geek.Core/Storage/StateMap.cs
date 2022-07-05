@@ -11,6 +11,11 @@ namespace Geek.Server
             map = new Dictionary<TKey, TValue>();
         }
 
+        public StateMap(int capacity)
+        {
+            map = new Dictionary<TKey, TValue>(capacity);
+        }
+
         public StateMap(StateMap<TKey, TValue> dictionary)
         {
             map = new Dictionary<TKey, TValue>(dictionary.map);

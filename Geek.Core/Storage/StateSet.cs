@@ -12,6 +12,11 @@ namespace Geek.Server
             set = new HashSet<T>();
         }
 
+        public StateSet(int capacity)
+        {
+            set = new HashSet<T>(capacity);
+        }
+
         public StateSet(IEnumerable<T> collection)
         {
             set = new HashSet<T>(collection);
