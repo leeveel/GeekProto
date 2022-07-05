@@ -1,0 +1,30 @@
+if({{name}} == null)
+{
+    XBuffer.WriteBool(false, _buffer_, ref _offset_);
+}
+else
+{
+    XBuffer.WriteBool(true, _buffer_, ref _offset_);
+    XBuffer.WriteInt({{name}}.Count, _buffer_, ref _offset_);
+    {{~ if prop1.iscustom ~}}
+    for (int i=0; i<{{name}}.Count; i++)
+    {
+        if ({{name}}[i] == null)
+        {
+            Geek.Server.SerializeLogger.LogError($"{this.GetType().FullName}.{{name}} has null idx == : {i}");
+            XBuffer.WriteInt(0, _buffer_, ref _offset_);
+        }
+        else
+        {
+            XBuffer.WriteInt({{name}}[i].Sid, _buffer_, ref _offset_);
+            _offset_ = {{name}}[i].Write(_buffer_, _offset_);
+        }
+    }
+    {{~ else ~}}
+    foreach (var item in {{name}})
+    {
+	    {{ prop1.listwritecode}};
+    }
+    {{~ end ~}}
+}
+

@@ -2,10 +2,12 @@
 <config>
   <factory-template-path>Configs\Template\Factory.liquid</factory-template-path><!-- 工厂模板路径 -->
   <message-template-path>Configs\Template\Message.liquid</message-template-path> <!-- 消息模板路径 -->
+  <resolver-template-path>Configs\Template\Resolver.liquid</resolver-template-path><!-- Resolver模板路径 -->
   <client-factory-template-path>Configs\ClientTemplate\Factory.liquid</client-factory-template-path><!-- client工厂模板路径 -->
   <client-message-template-path>Configs\ClientTemplate\Message.liquid</client-message-template-path><!-- client消息模板路径 -->
+  <client-resolver-template-path>Configs\ClientTemplate\Resolver.liquid</client-resolver-template-path><!-- client消息模板路径 -->
+  <collection-template-path>Configs\Common\</collection-template-path><!-- 容器消息模板路径 -->
   <dll-path>Geek.Proto.dll</dll-path> <!-- proto dll path-->
   <server-out-path>..\Geek.Generate\Proto\</server-out-path> <!-- 服务器代码导出路径 -->
   <client-out-path>F:\github\leeveel\GeekServer\UnityDemo\Assets\Scripts\Generate\Proto\</client-out-path><!-- 客户端代码导出路径-->
-  <support-enum>false</support-enum>	<!-- 是否支持枚举 -->	
 </config>

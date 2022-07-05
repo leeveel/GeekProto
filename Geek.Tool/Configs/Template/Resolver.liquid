@@ -1,0 +1,112 @@
+﻿using System;
+using System.Collections.Generic;
+
+namespace Geek.Server.Proto
+{
+	public class SerializeResolver : IFormatterResolver
+    {
+        public static readonly IFormatterResolver Instance = new SerializeResolver();
+
+        private SerializeResolver()
+        {
+        }
+
+        public ISerializeFormatter<T> GetFormatter<T>()
+        {
+            return FormatterCache<T>.Formatter;
+        }
+
+        private static class FormatterCache<T>
+        {
+            internal static readonly ISerializeFormatter<T> Formatter;
+
+            static FormatterCache()
+            {
+                var f = GeneratedResolverGetFormatterHelper.GetFormatter(typeof(T));
+                if (f != null)
+                {
+                    Formatter = (ISerializeFormatter<T>)f;
+                }
+                else
+                {
+                    Geek.Server.SerializeLogger.LogError($"找不到类型{typeof(T).FullName}");
+                }
+            }
+        }
+    }
+
+    internal static class GeneratedResolverGetFormatterHelper
+    {
+        private static readonly global::System.Collections.Generic.Dictionary<Type, int> lookup;
+
+        static GeneratedResolverGetFormatterHelper()
+        {
+            {{id = 0}}
+            lookup = new global::System.Collections.Generic.Dictionary<Type, int>({{~count~}})
+            {
+                {{~ for item in genericinfos ~}}
+                { typeof({{item.fullname}}), {{id++}} },
+                {{~ end ~}}
+            };
+        }
+
+        internal static object GetFormatter(Type t)
+        {
+            int key;
+            if (!lookup.TryGetValue(t, out key))
+            {
+                return null;
+            }
+
+            {{id = 0}}
+            switch (key)
+            {
+                {{~ for item in genericinfos ~}}
+                {{~ if item.isdic ~}}
+                case {{id++}}: return new {{item.formatter}}<{{item.arg0}},{{item.arg1}}>();
+                {{~else if item.iscollection~}}
+                case {{id++}}: return new {{item.formatter}}<{{item.arg0}}>();
+                {{~else if item.iscustom~}}
+                case {{id++}}: return new {{item.formatter}}<{{item.fullname}}>();
+                {{~ end ~}}
+                {{~ end ~}}
+                default: return null;
+            }
+        }
+    }
+
+    public class CustomFormatter<T> : ISerializeFormatter<T> where T : Serializable, new()
+    {
+        public T Deserialize(Span<byte> buffer, ref int offset)
+        {
+            T val = null;
+            var hasVal = XBuffer.ReadBool(buffer, ref offset);
+            if (hasVal)
+            {
+                var sid = XBuffer.ReadInt(buffer, ref offset);
+                val = SClassFactory.Create<T>(sid);
+                offset = val.Read(buffer, offset);
+            }
+            return val;
+        }
+
+        public int GetSerializeLength(T value)
+        {
+            if (value == null)
+                return XBuffer.BoolSize;
+             return XBuffer.BoolSize + XBuffer.IntSize + value.GetSerializeLength(); //hasval + sid + length
+        }
+
+        public void Serialize(Span<byte> buffer, T value, ref int offset)
+        {
+            bool hasVal = value != default;
+            XBuffer.WriteBool(hasVal, buffer, ref offset);
+            if (hasVal)
+            {
+                XBuffer.WriteInt(value.Sid, buffer, ref offset);
+                offset = value.Write(buffer, offset);
+            }
+        }
+    }
+
+}

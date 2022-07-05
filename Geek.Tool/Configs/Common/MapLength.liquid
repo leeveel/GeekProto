@@ -1,0 +1,43 @@
+
+if ({{name}} == null)
+{
+	len += XBuffer.BoolSize; //hasVal 
+}
+else
+{
+	len += XBuffer.BoolSize + XBuffer.IntSize; //count
+	if({{name}}.Count > 0)
+	{
+		{{~ if prop1.isstrictprimitive ~}}
+		len += {{name}}.Count * {{ prop1.primitivelengthcode }};
+		{{~ end ~}}
+		{{~ if prop2.isstrictprimitive ~}}
+		len += {{name}}.Count * {{ prop2.primitivelengthcode }};
+		{{~ end ~}}
+
+		{{~ if !prop1.isstrictprimitive || !prop2.isstrictprimitive ~}}
+		foreach (var keypair in {{name}})
+		{
+			{{~ if !prop1.isstrictprimitive ~}} {{~#只有可能是string ~}}
+			len += XBuffer.GetStringSerializeLength(keypair.Key);
+			{{~ end ~}}
+
+			{{~ if !prop2.isstrictprimitive ~}}
+
+			{{~ if prop2.isstring ~}}
+			len += XBuffer.GetStringSerializeLength(keypair.Value);
+			{{~ else if prop2.isbytearray ~}}
+			len += XBuffer.GetByteArraySerializeLength(keypair.Value);
+			{{~ else if prop2.iscustom ~}}
+			len += GetCustomLength<{{prop2.clsname}}>(keypair.Value);
+			{{~ end ~}}
+
+			{{~ end ~}}
+		}
+		{{~ end ~}}
+	}
+}
+
+
+
+

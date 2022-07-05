@@ -1,4 +1,5 @@
-﻿using Scriban;
+﻿
+using Scriban;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -9,7 +10,7 @@ namespace Tool.Logic
     public class ProtoGen
     {
         /// <summary>
-        /// 0: 服务器 1：客户端 2：服务器+客户端
+        /// 1: 服务器 2：客户端 3：服务器+客户端
         /// </summary>
         private int exportModel;
         /// <summary>
@@ -30,35 +31,54 @@ namespace Tool.Logic
 
             var factory = new FactoryTemplate();
             var targetDll = LoadDll();
+
             var types = targetDll.GetTypes();
+
+            var resolver = new NestTypeTemplate();
             foreach (var type in types)
             {
-                var tp = TypeParser.ToTemplate(type);
+                var tp = TypeParser.ToTemplate(type, resolver);
+
                 if (tp == null)
                     continue;
-                factory.sclasses.Add(tp);
+             
+                if(!tp.isenum)
+                    factory.sclasses.Add(tp);
+        
                 System.Console.WriteLine($"gen {type.Name}");
-
+           
                 if (exportModel == 1 || exportModel == 3)
                 {
+                   
                     Setting.ServerOutPath.CreateAsDirectory();
-                    Template template = Template.Parse(File.ReadAllText(Setting.MessageTemplatePath));
+
+      
+                    Template template = Template.Parse(File.ReadAllText(Setting.MessageTemplatePath));          
                     Template factoryTemplate = Template.Parse(File.ReadAllText(Setting.FactoryTemplatePath));
+                    Template resolverTemplate = Template.Parse(File.ReadAllText(Setting.ResolverTemplatePath));
+
+
                     var str = template.Render(tp);
-
-                    //导出服务器
+                
                     string filePath = Setting.ServerOutPath + type.Name;
+             
                     File.WriteAllText(filePath + ".cs", str);
-
+                     
                     string factoryPath = Setting.ServerOutPath + "SClassFactory.cs";
                     var fstr = factoryTemplate.Render(factory);
                     File.WriteAllText(factoryPath, fstr);
+
+                    string resolverPath = Setting.ServerOutPath + "SerializeResolver.cs";
+                    var rstr = resolverTemplate.Render(resolver);
+                    File.WriteAllText(resolverPath, rstr);
                 }
+             
                 if (exportModel == 2 || exportModel == 3)
                 {
                     Setting.ClientOutPath.CreateAsDirectory();
                     Template template = Template.Parse(File.ReadAllText(Setting.ClientMessageTemplatePath));
                     Template factoryTemplate = Template.Parse(File.ReadAllText(Setting.ClientFactoryTemplatePath));
+                    Template resolverTemplate = Template.Parse(File.ReadAllText(Setting.ClientResolverTemplatePath));
                     var str = template.Render(tp);
 
                     //导出客户端
@@ -70,8 +90,13 @@ namespace Tool.Logic
                     factoryPath.CreateAsDirectory(true);
                     var fstr = factoryTemplate.Render(factory);
                     File.WriteAllText(factoryPath, fstr);
+
+                    string resolverPath = Setting.ServerOutPath + "SerializeResolver.cs";
+                    var rstr = resolverTemplate.Render(resolver);
+                    File.WriteAllText(resolverPath, rstr);
                 }
             }
+            
         }
 
         private Assembly LoadDll()

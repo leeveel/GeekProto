@@ -1,0 +1,29 @@
+var hasVal = XBuffer.ReadBool(_buffer_, ref _offset_);
+if(hasVal)
+{
+	{{name}} = new {{clsname}}();
+	{{~ if prop2.iscustom ~}}
+	int count{{idx}} = XBuffer.ReadInt(_buffer_, ref _offset_);
+	for (int i = 0; i < count{{idx}}; ++i)
+	{
+		var key = {{prop1.readcode}};
+		var sid = XBuffer.ReadInt(_buffer_, ref _offset_);
+		if (sid <= 0)
+		{
+			{{name}}[key] = default;
+			continue;
+		}
+		var val = Create<{{prop2.clsname}}>(sid);
+		_offset_ = val.Read(_buffer_, _offset_);
+		{{name}}.Add(key, val);
+	}
+	{{~ else ~}}
+	int count{{idx}} = XBuffer.ReadInt(_buffer_, ref _offset_);
+	for (int i = 0; i < count{{idx}}; ++i)
+	{
+		var key = {{prop1.readcode}};
+		var val = {{prop2.readcode}};
+		{{name}}.Add(key, val);
+	}
+	{{~ end ~}}
+}

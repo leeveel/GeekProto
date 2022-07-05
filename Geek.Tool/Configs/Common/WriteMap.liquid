@@ -1,0 +1,31 @@
+if({{name}} == null)
+{
+    XBuffer.WriteBool(false, _buffer_, ref _offset_);
+}
+else
+{
+    XBuffer.WriteBool(true, _buffer_, ref _offset_);
+    XBuffer.WriteInt({{name}}.Count, _buffer_, ref _offset_);
+    {{~ if prop2.iscustom ~}}
+    foreach (var kv in {{name}})
+    {
+	    {{ prop1.mapkeywritecode }};
+        if (kv.Value == null)
+        {
+            Geek.Server.SerializeLogger.LogError($"{this.GetType().FullName}.{{name}} has null item: {kv.Key}");
+            XBuffer.WriteInt(0, _buffer_, ref _offset_);
+        }
+        else
+        {
+            XBuffer.WriteInt(kv.Value.Sid, _buffer_, ref _offset_);
+            _offset_ = kv.Value.Write(_buffer_, _offset_);
+        }
+    }
+    {{~ else ~}}
+    foreach (var kv in {{name}})
+    {
+	    {{ prop1.mapkeywritecode }};
+	    {{ prop2.mapvaluewritecode }};
+    }
+    {{~ end ~}}
+}

@@ -1,0 +1,29 @@
+if ({{name}} == null)
+{
+	len += XBuffer.BoolSize; //hasVal 
+}
+else
+{
+	len += XBuffer.BoolSize + XBuffer.IntSize; //count
+	if({{name}}.Count > 0)
+	{
+		{{~ if prop1.iscustom ~}}
+		for (int i = 0; i < {{name}}.Count; i++)
+		{
+			len += GetCustomLength<{{prop1.clsname}}>({{name}}[i]);
+		}
+		{{~ else if prop1.isstring ~}}
+		for (int i = 0; i < {{name}}.Count; i++)
+		{
+			len += XBuffer.GetStringSerializeLength({{name}}[i]);
+		}
+		{{~ else if prop1.isbytearray ~}}
+		for (int i = 0; i < {{name}}.Count; i++)
+		{
+			len += XBuffer.GetByteArraySerializeLength({{name}}[i]);
+		}
+		{{~ else ~}}
+		len += {{name}}.Count * {{ prop1.primitivelengthcode }};
+		{{~ end ~}}
+	}
+}
