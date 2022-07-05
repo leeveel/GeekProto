@@ -4,20 +4,22 @@ Super Fast Binary Serialization Library
 性能高，数据量小，支持ILRuntime
 
 ## 支持列表： ##
-所有基础类型 byte sbyte bool short int long float double string byte[]
+所有基础类型
+byte sbyte char bool short ushort int uint long ulong float double   
+string byte[] DateTime  
+
 
 枚举类型
 
-容器类型：Dictionary List HashSet
+常用容器类型：Dictionary List HashSet LinkedList
 
-容器单层嵌套：Dictionary<int, List<int>> Dictionary<int, HashSet<int>> Dictionary<int, Dictionary<int, int>>
+容器任意嵌套：Dictionary<int, List<int>> Dictionary<int, HashSet<int>> Dictionary<int, Dictionary<int, int>>
 
 自定义类型(T),并可以与容器组合使用，如：Dictionary<int, Dictionary<int, T>>
 
 Dictionary的key只能为：基础类型和枚举
 
 ## 不支持列表： ##
-容器多层嵌套(实际开发中几乎用不上)
 
 复杂对象Key的Dictionary
 
