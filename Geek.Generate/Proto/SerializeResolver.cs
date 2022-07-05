@@ -94,7 +94,7 @@ namespace Geek.Server.Proto
                 case 8: return new DictionaryFormatter<Int32,Geek.Server.Proto.Test1>();
                 case 9: return new DictionaryFormatter<Int32,List<Geek.Server.Proto.Test1>>();
                 case 10: return new DictionaryFormatter<Int32,HashSet<Geek.Server.Proto.Test1>>();
-                case 11: return new HasSetFormatter<Geek.Server.Proto.Test1>();
+                case 11: return new HashSetFormatter<Geek.Server.Proto.Test1>();
                 case 12: return new DictionaryFormatter<Int32,Dictionary<Int64, Geek.Server.Proto.Test1>>();
                 case 13: return new DictionaryFormatter<Int64,Geek.Server.Proto.Test1>();
                 case 14: return new DictionaryFormatter<String,String>();

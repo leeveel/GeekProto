@@ -157,6 +157,120 @@ namespace Geek.Server.Proto
 			return _offset_;
 		}
 
+		/**********************Byte[]*******************************/
+
+		///<summary>反序列化，读取数据</summary>
+        public override int Read(byte[] _buffer_, int _offset_)
+		{
+			UniId = XBuffer.ReadInt(_buffer_, ref _offset_);
+			_offset_ = base.Read(_buffer_, _offset_);
+			
+			//字段个数,最多支持255个
+			var _fieldNum_ = XBuffer.ReadByte(_buffer_, ref _offset_);
+			
+			do {
+				if(_fieldNum_ > 0)
+				{
+					Id = XBuffer.ReadLong(_buffer_, ref _offset_);
+
+
+				}else break;
+				if(_fieldNum_ > 1)
+				{
+					S1 = XBuffer.ReadString(_buffer_, ref _offset_);
+
+
+				}else break;
+				if(_fieldNum_ > 2)
+				{
+					I1 = XBuffer.ReadInt(_buffer_, ref _offset_);
+
+
+				}else break;
+				if(_fieldNum_ > 3)
+				{
+					B1 = XBuffer.ReadBool(_buffer_, ref _offset_);
+
+
+				}else break;
+				if(_fieldNum_ > 4)
+				{
+					F1 = XBuffer.ReadFloat(_buffer_, ref _offset_);
+
+
+				}else break;
+				if(_fieldNum_ > 5)
+				{
+					S2 = XBuffer.ReadShort(_buffer_, ref _offset_);
+
+
+				}else break;
+				if(_fieldNum_ > 6)
+				{
+					D1 = XBuffer.ReadDouble(_buffer_, ref _offset_);
+
+
+				}else break;
+				if(_fieldNum_ > 7)
+				{
+					B2 = XBuffer.ReadBytes(_buffer_, ref _offset_);
+
+
+				}else break;
+				if(_fieldNum_ > 8)
+				{
+					O1 = XBuffer.ReadString(_buffer_, ref _offset_);
+
+
+				}else break;
+			}while(false);
+			
+			return _offset_;
+		}
+
+		///<summary>序列化，写入数据</summary>
+        public override int Write(byte[]  _buffer_, int _offset_)
+        {	
+			XBuffer.WriteInt(UniId, _buffer_, ref _offset_);
+			_offset_ = base.Write(_buffer_, _offset_);
+			
+			//写入字段数量,最多支持255个
+			XBuffer.WriteByte(9, _buffer_, ref _offset_);
+			
+			//写入数据
+
+			XBuffer.WriteLong(Id, _buffer_, ref _offset_);
+
+
+			XBuffer.WriteString(S1, _buffer_, ref _offset_);
+
+
+			XBuffer.WriteInt(I1, _buffer_, ref _offset_);
+
+
+			XBuffer.WriteBool(B1, _buffer_, ref _offset_);
+
+
+			XBuffer.WriteFloat(F1, _buffer_, ref _offset_);
+
+
+			XBuffer.WriteShort(S2, _buffer_, ref _offset_);
+
+
+			XBuffer.WriteDouble(D1, _buffer_, ref _offset_);
+
+
+			XBuffer.WriteBytes(B2, _buffer_, ref _offset_);
+
+
+			XBuffer.WriteString(O1, _buffer_, ref _offset_);
+
+			
+			return _offset_;
+		}
+
+
+
 
 		/*********************************************************/
 		public override int GetSerializeLength()

@@ -37,6 +37,7 @@ namespace Geek.Server
         public static readonly Type ByteArrType = typeof(byte[]);
 
 
+        #region Generic
         private static readonly Dictionary<Type, int> supportTypes = new Dictionary<Type, int>()
         {
             { typeof(bool), 0 },
@@ -105,35 +106,6 @@ namespace Geek.Server
             return false;
         }
 
-
-        #region SerializeLength
-        public static int GetStringSerializeLength(string str)
-        {
-            if (str == null)
-                return BoolSize;
-            if (str.Length <= 0)
-                return BoolSize + IntSize;
-            else
-                return BoolSize + IntSize + System.Text.Encoding.UTF8.GetByteCount(str);
-        }
-
-        public static int GetByteArraySerializeLength(byte[] bytes)
-        {
-            if (bytes == null)
-                return BoolSize;
-            return BoolSize + IntSize + bytes.Length;
-        }
-
-        public static int GetPrimitiveSerializeLength<T>()
-        {
-            Type t = typeof(T);
-            if (t.IsEnum)
-                return IntSize;
-            if (typeSize.TryGetValue(t, out int len))
-                return len;
-            throw new ArgumentException($"未知的数据类型:{t.FullName}");
-        }
-
         public static T Read<T>(Span<byte> buffer, ref int offset)
         {
             Type t = typeof(T);
@@ -180,7 +152,6 @@ namespace Geek.Server
             }
             return default;
         }
-        #endregion
 
         public static int Write<T>(T value, Span<byte> buffer, ref int offset)
         {
@@ -245,7 +216,36 @@ namespace Geek.Server
             }
             return offset;
         }
+        #endregion
 
+        #region SerializeLength
+        public static int GetStringSerializeLength(string str)
+        {
+            if (str == null)
+                return BoolSize;
+            if (str.Length <= 0)
+                return BoolSize + IntSize;
+            else
+                return BoolSize + IntSize + System.Text.Encoding.UTF8.GetByteCount(str);
+        }
+
+        public static int GetByteArraySerializeLength(byte[] bytes)
+        {
+            if (bytes == null)
+                return BoolSize;
+            return BoolSize + IntSize + bytes.Length;
+        }
+
+        public static int GetPrimitiveSerializeLength<T>()
+        {
+            Type t = typeof(T);
+            if (t.IsEnum)
+                return IntSize;
+            if (typeSize.TryGetValue(t, out int len))
+                return len;
+            throw new ArgumentException($"未知的数据类型:{t.FullName}");
+        }
+        #endregion
 
         #region Endian
 
@@ -308,8 +308,6 @@ namespace Geek.Server
             return HostToNetworkOrder(network);
         }
         #endregion
-
-
 
         #region WriteSpan
 
@@ -567,8 +565,6 @@ namespace Geek.Server
 
         #endregion
 
-
-
         #region ReadSpan
         public static unsafe DateTime ReadDateTime(Span<byte> buffer, ref int offset)
         {
@@ -782,312 +778,502 @@ namespace Geek.Server
         }
         #endregion
 
+        #region WriteByteArray
 
-        //#region Write
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe void WriteDateTime(DateTime value, byte[] buffer, ref int offset)
+        {
+            if (offset + LongSize > buffer.Length)
+            {
+                throw new ArgumentException($"xbuffer write out of index {offset + IntSize}, {buffer.Length}");
+            }
 
-        //public static unsafe void WriteInt(int value, byte[] buffer, ref int offset)
-        //{
-        //    if (offset + IntSize > buffer.Length)
-        //    {
-        //        offset += IntSize;
-        //        return;
-        //    }
+            fixed (byte* ptr = buffer)
+            {
+                *(long*)(ptr + offset) = HostToNetworkOrder(value.Ticks);
+                offset += LongSize;
+            }
+        }
 
-        //    fixed (byte* ptr = buffer)
-        //    {
-        //        *(int*)(ptr + offset) = HostToNetworkOrder(value);
-        //        offset += IntSize;
-        //    }
-        //}
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe bool ReadBool(byte[] buffer, ref int offset)
+        {
+            if (offset + BoolSize > buffer.Length)
+                throw new Exception("xbuffer read out of index");
 
-        //public static unsafe void WriteShort(short value, byte[] buffer, ref int offset)
-        //{
-        //    if (offset + ShortSize > buffer.Length)
-        //    {
-        //        offset += ShortSize;
-        //        return;
-        //    }
+            fixed (byte* ptr = buffer)
+            {
+                var value = *(bool*)(ptr + offset);
+                offset += BoolSize;
+                return value;
+            }
+        }
 
-        //    fixed (byte* ptr = buffer)
-        //    {
-        //        *(short*)(ptr + offset) = HostToNetworkOrder(value);
-        //        offset += ShortSize;
-        //    }
-        //}
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe void WriteBool(bool value, byte[] buffer, ref int offset)
+        {
+            if (offset + BoolSize > buffer.Length)
+            {
+                throw new ArgumentException($"xbuffer write out of index {offset + BoolSize}, {buffer.Length}");
+            }
 
-        //public static unsafe void WriteLong(long value, byte[] buffer, ref int offset)
-        //{
-        //    if (offset + LongSize > buffer.Length)
-        //    {
-        //        offset += LongSize;
-        //        return;
-        //    }
+            fixed (byte* ptr = buffer)
+            {
+                *(bool*)(ptr + offset) = value;
+                offset += BoolSize;
+            }
+        }
 
-        //    fixed (byte* ptr = buffer)
-        //    {
-        //        *(long*)(ptr + offset) = HostToNetworkOrder(value);
-        //        offset += LongSize;
-        //    }
-        //}
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe void WriteSByte(sbyte value, byte[] buffer, ref int offset)
+        {
+            if (offset + SbyteSize > buffer.Length)
+            {
+                throw new ArgumentException($"xbuffer write out of index {offset + SbyteSize}, {buffer.Length}");
+            }
 
-        //public static unsafe void WriteFloat(float value, byte[] buffer, ref int offset)
-        //{
-        //    if (offset + FloatSize > buffer.Length)
-        //    {
-        //        offset += FloatSize;
-        //        return;
-        //    }
+            fixed (byte* ptr = buffer)
+            {
+                *(sbyte*)(ptr + offset) = value;
+                offset += SbyteSize;
+            }
+        }
 
-        //    fixed (byte* ptr = buffer)
-        //    {
-        //        *(float*)(ptr + offset) = value;
-        //        *(int*)(ptr + offset) = HostToNetworkOrder(*(int*)(ptr + offset));
-        //        offset += FloatSize;
-        //    }
-        //}
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe void WriteByte(byte value, byte[] buffer, ref int offset)
+        {
+            if (offset + ByteSize > buffer.Length)
+            {
+                throw new ArgumentException($"xbuffer write out of index {offset + ByteSize}, {buffer.Length}");
+            }
 
-        //public static unsafe void WriteDouble(double value, byte[] buffer, ref int offset)
-        //{
-        //    if (offset + DoubleSize > buffer.Length)
-        //    {
-        //        offset += DoubleSize;
-        //        return;
-        //    }
+            fixed (byte* ptr = buffer)
+            {
+                *(ptr + offset) = value;
+                offset += ByteSize;
+            }
+        }
 
-        //    fixed (byte* ptr = buffer)
-        //    {
-        //        *(double*)(ptr + offset) = value;
-        //        *(long*)(ptr + offset) = HostToNetworkOrder(*(long*)(ptr + offset));
-        //        offset += DoubleSize;
-        //    }
-        //}
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe void WriteChar(char value, byte[] buffer, ref int offset)
+        {
+            if (offset + CharSize > buffer.Length)
+            {
+                throw new ArgumentException($"xbuffer write out of index {offset + CharSize}, {buffer.Length}");
+            }
 
-        //public static unsafe void WriteByte(byte value, byte[] buffer, ref int offset)
-        //{
-        //    if (offset + ByteSize > buffer.Length)
-        //    {
-        //        offset += ByteSize;
-        //        return;
-        //    }
+            fixed (byte* ptr = buffer)
+            {
+                *(short*)(ptr + offset) = HostToNetworkOrder((short)value);
+                offset += CharSize;
+            }
+        }
 
-        //    fixed (byte* ptr = buffer)
-        //    {
-        //        *(ptr + offset) = value;
-        //        offset += ByteSize;
-        //    }
-        //}
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe void WriteShort(short value, byte[] buffer, ref int offset)
+        {
+            if (offset + ShortSize > buffer.Length)
+            {
+                throw new ArgumentException($"xbuffer write out of index {offset + ShortSize}, {buffer.Length}");
+            }
 
-        //public static unsafe void WriteBytes(byte[] value, byte[] buffer, ref int offset)
-        //{
-        //    if (value == null)
-        //    {
-        //        WriteBool(false, buffer, ref offset);
-        //        return;
-        //    }
-        //    WriteBool(true, buffer, ref offset);
+            fixed (byte* ptr = buffer)
+            {
+                *(short*)(ptr + offset) = HostToNetworkOrder(value);
+                offset += ShortSize;
+            }
+        }
 
-        //    if (offset + value.Length + IntSize > buffer.Length)
-        //    {
-        //        offset += value.Length + IntSize;
-        //        return;
-        //    }
-        //    WriteInt(value.Length, buffer, ref offset);
-        //    System.Array.Copy(value, 0, buffer, offset, value.Length);
-        //    offset += value.Length;
-        //}
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe void WriteUShort(ushort value, byte[] buffer, ref int offset)
+        {
+            if (offset + UShortSize > buffer.Length)
+            {
+                throw new ArgumentException($"xbuffer write out of index {offset + UShortSize}, {buffer.Length}");
+            }
 
-        //public static unsafe void WriteSByte(sbyte value, byte[] buffer, ref int offset)
-        //{
-        //    if (offset + SbyteSize > buffer.Length)
-        //    {
-        //        offset += SbyteSize;
-        //        return;
-        //    }
+            fixed (byte* ptr = buffer)
+            {
+                *(ushort*)(ptr + offset) = HostToNetworkOrder(value);
+                offset += UShortSize;
+            }
+        }
 
-        //    fixed (byte* ptr = buffer)
-        //    {
-        //        *(sbyte*)(ptr + offset) = value;
-        //        offset += SbyteSize;
-        //    }
-        //}
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe void WriteInt(int value, byte[] buffer, ref int offset)
+        {
+            if (offset + IntSize > buffer.Length)
+            {
+                throw new ArgumentException($"xbuffer write out of index {offset + IntSize}, {buffer.Length}");
+            }
 
-        //public static unsafe void WriteString(string value, byte[] buffer, ref int offset)
-        //{
-        //    if (value == null)
-        //    {
-        //        WriteBool(false, buffer, ref offset);
-        //        return;
-        //    }
+            fixed (byte* ptr = buffer)
+            {
+                *(int*)(ptr + offset) = HostToNetworkOrder(value);
+                offset += IntSize;
+            }
+        }
 
-        //    WriteBool(true, buffer, ref offset);
-        //    int len = System.Text.Encoding.UTF8.GetByteCount(value);
-        //    //预判已经超出长度了，直接计算长度就行了
-        //    if (offset + len + ShortSize > buffer.Length)
-        //    {
-        //        offset += len + ShortSize;
-        //        return;
-        //    }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe void WriteUInt(uint value, byte[] buffer, ref int offset)
+        {
+            if (offset + UIntSize > buffer.Length)
+            {
+                throw new ArgumentException($"xbuffer write out of index {offset + UIntSize}, {buffer.Length}");
+            }
 
-        //    fixed (byte* ptr = buffer)
-        //    {
-        //        System.Text.Encoding.UTF8.GetBytes(value, 0, value.Length, buffer, offset + ShortSize);
-        //        WriteShort((short)len, buffer, ref offset);
-        //        offset += len;
-        //    }
-        //}
+            fixed (byte* ptr = buffer)
+            {
+                *(uint*)(ptr + offset) = HostToNetworkOrder(value);
+                offset += UIntSize;
+            }
+        }
 
-        //public static unsafe void WriteBool(bool value, byte[] buffer, ref int offset)
-        //{
-        //    if (offset + BoolSize > buffer.Length)
-        //    {
-        //        offset += BoolSize;
-        //        return;
-        //    }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe void WriteLong(long value, byte[] buffer, ref int offset)
+        {
+            if (offset + LongSize > buffer.Length)
+            {
+                throw new ArgumentException($"xbuffer write out of index {offset + LongSize}, {buffer.Length}");
+            }
 
-        //    fixed (byte* ptr = buffer)
-        //    {
-        //        *(bool*)(ptr + offset) = value;
-        //        offset += BoolSize;
-        //    }
-        //}
-        //#endregion
+            fixed (byte* ptr = buffer)
+            {
+                *(long*)(ptr + offset) = HostToNetworkOrder(value);
+                offset += LongSize;
+            }
+        }
 
-        //#region Read
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe void WriteULong(ulong value, byte[] buffer, ref int offset)
+        {
+            if (offset + ULongSize > buffer.Length)
+            {
+                throw new ArgumentException($"xbuffer write out of index {offset + ULongSize}, {buffer.Length}");
+            }
 
-        //public static unsafe int ReadInt(byte[] buffer, ref int offset)
-        //{
-        //    if (offset > buffer.Length + IntSize)
-        //        throw new Exception("xbuffer read out of index");
+            fixed (byte* ptr = buffer)
+            {
+                *(ulong*)(ptr + offset) = HostToNetworkOrder(value);
+                offset += ULongSize;
+            }
+        }
 
-        //    fixed (byte* ptr = buffer)
-        //    {
-        //        var value = *(int*)(ptr + offset);
-        //        offset += IntSize;
-        //        return NetworkToHostOrder(value);
-        //    }
-        //}
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe void WriteFloat(float value, byte[] buffer, ref int offset)
+        {
+            if (offset + FloatSize > buffer.Length)
+            {
+                throw new ArgumentException($"xbuffer write out of index {offset + FloatSize}, {buffer.Length}");
+            }
 
-        //public static unsafe short ReadShort(byte[] buffer, ref int offset)
-        //{
-        //    if (offset > buffer.Length + ShortSize)
-        //        throw new Exception("xbuffer read out of index");
+            fixed (byte* ptr = buffer)
+            {
+                *(float*)(ptr + offset) = value;
+                *(int*)(ptr + offset) = HostToNetworkOrder(*(int*)(ptr + offset));
+                offset += FloatSize;
+            }
+        }
 
-        //    fixed (byte* ptr = buffer)
-        //    {
-        //        var value = *(short*)(ptr + offset);
-        //        offset += ShortSize;
-        //        return NetworkToHostOrder(value);
-        //    }
-        //}
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe void WriteDouble(double value, byte[] buffer, ref int offset)
+        {
+            if (offset + DoubleSize > buffer.Length)
+            {
+                throw new ArgumentException($"xbuffer write out of index {offset + DoubleSize}, {buffer.Length}");
+            }
 
-        //public static unsafe long ReadLong(byte[] buffer, ref int offset)
-        //{
-        //    if (offset > buffer.Length + LongSize)
-        //        throw new Exception("xbuffer read out of index");
+            fixed (byte* ptr = buffer)
+            {
+                *(double*)(ptr + offset) = value;
+                *(long*)(ptr + offset) = HostToNetworkOrder(*(long*)(ptr + offset));
+                offset += DoubleSize;
+            }
+        }
 
-        //    fixed (byte* ptr = buffer)
-        //    {
-        //        var value = *(long*)(ptr + offset);
-        //        offset += LongSize;
-        //        return NetworkToHostOrder(value);
-        //    }
-        //}
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe void WriteBytes(byte[] value, byte[] buffer, ref int offset)
+        {
+            if (value == null)
+            {
+                WriteBool(false, buffer, ref offset);
+                return;
+            }
+            WriteBool(true, buffer, ref offset);
 
-        //public static unsafe float ReadFloat(byte[] buffer, ref int offset)
-        //{
-        //    if (offset > buffer.Length + FloatSize)
-        //        throw new Exception("xbuffer read out of index");
+            if (offset + value.Length + IntSize > buffer.Length)
+            {
+                throw new ArgumentException($"xbuffer write out of index {offset + value.Length + IntSize}, {buffer.Length}");
+            }
 
-        //    fixed (byte* ptr = buffer)
-        //    {
-        //        *(int*)(ptr + offset) = NetworkToHostOrder(*(int*)(ptr + offset));
-        //        var value = *(float*)(ptr + offset);
-        //        offset += FloatSize;
-        //        return value;
-        //    }
-        //}
+            WriteInt(value.Length, buffer, ref offset);
+            fixed (byte* ptr = buffer, valPtr = value)
+            {
+                Buffer.MemoryCopy(valPtr, ptr + offset, value.Length, value.Length);
+                offset += value.Length;
+            }
+        }
 
-        //public static unsafe double ReadDouble(byte[] buffer, ref int offset)
-        //{
-        //    if (offset > buffer.Length + DoubleSize)
-        //        throw new Exception("xbuffer read out of index");
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe void WriteBytesWithoutLength(byte[] value, byte[] buffer, ref int offset)
+        {
+            if (value == null)
+                return;
 
-        //    fixed (byte* ptr = buffer)
-        //    {
-        //        *(long*)(ptr + offset) = NetworkToHostOrder(*(long*)(ptr + offset));
-        //        var value = *(double*)(ptr + offset);
-        //        offset += DoubleSize;
-        //        return value;
-        //    }
-        //}
+            if (offset + value.Length > buffer.Length)
+            {
+                throw new ArgumentException($"xbuffer write out of index {offset + value.Length}, {buffer.Length}");
+            }
 
-        //public static unsafe byte ReadByte(byte[] buffer, ref int offset)
-        //{
-        //    if (offset > buffer.Length + ByteSize)
-        //        throw new Exception("xbuffer read out of index");
+            fixed (byte* ptr = buffer, valPtr = value)
+            {
+                Buffer.MemoryCopy(valPtr, ptr + offset, value.Length, value.Length);
+                offset += value.Length;
+            }
+        }
 
-        //    fixed (byte* ptr = buffer)
-        //    {
-        //        var value = *(ptr + offset);
-        //        offset += ByteSize;
-        //        return value;
-        //    }
-        //}
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe void WriteString(string value, byte[] buffer, ref int offset)
+        {
+            if (value == null)
+            {
+                WriteBool(false, buffer, ref offset);
+                return;
+            }
+            WriteBool(true, buffer, ref offset);
 
-        //public static unsafe byte[] ReadBytes(byte[] buffer, ref int offset)
-        //{
-        //    var len = ReadInt(buffer, ref offset);
-        //    //数据不可信
-        //    if (len <= 0 || offset + len > buffer.Length)
-        //        return new byte[0];
+            int len = System.Text.Encoding.UTF8.GetByteCount(value);
+            //预判已经超出长度了，直接计算长度就行了
+            if (offset + len + IntSize > buffer.Length)
+            {
+                throw new ArgumentException($"xbuffer write out of index {offset + len + IntSize}, {buffer.Length}");
+            }
 
-        //    var data = new byte[len];
-        //    System.Array.Copy(buffer, offset, data, 0, len);
-        //    offset += len;
-        //    return data;
-        //}
+            WriteInt(len, buffer, ref offset);
+            var val = System.Text.Encoding.UTF8.GetBytes(value);
+            fixed (byte* ptr = buffer, valPtr = val)
+            {
+                Buffer.MemoryCopy(valPtr, ptr + offset, len, len);
+                offset += len;
+            }
+        }
 
-        //public static unsafe sbyte ReadSByte(byte[] buffer, ref int offset)
-        //{
-        //    if (offset > buffer.Length + ByteSize)
-        //        throw new Exception("xbuffer read out of index");
+        #endregion
 
-        //    fixed (byte* ptr = buffer)
-        //    {
-        //        var value = *(sbyte*)(ptr + offset);
-        //        offset += ByteSize;
-        //        return value;
-        //    }
-        //}
+        #region ReadByteArray
 
-        //public static unsafe string ReadString(byte[] buffer, ref int offset)
-        //{
-        //    fixed (byte* ptr = buffer)
-        //    {
-        //        var len = ReadShort(buffer, ref offset);
-        //        //数据不可信
-        //        if (len <= 0 || offset + len > buffer.Length)
-        //            return "";
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe DateTime ReadDateTime(byte[] buffer, ref int offset)
+        {
+            if (offset + LongSize > buffer.Length)
+                throw new Exception("xbuffer read out of index");
 
-        //        var value = System.Text.Encoding.UTF8.GetString(buffer, offset, len);
-        //        offset += len;
-        //        return value;
-        //    }
-        //}
+            fixed (byte* ptr = buffer)
+            {
+                var value = *(long*)(ptr + offset);
+                offset += LongSize;
+                long tick = NetworkToHostOrder(value);
+                return new DateTime(tick);
+            }
+        }
 
-        //public static unsafe bool ReadBool(byte[] buffer, ref int offset)
-        //{
-        //    if (offset > buffer.Length + BoolSize)
-        //        throw new Exception("xbuffer read out of index");
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe char ReadChar(byte[] buffer, ref int offset)
+        {
+            if (offset + CharSize > buffer.Length)
+                throw new Exception("xbuffer read out of index");
 
-        //    fixed (byte* ptr = buffer)
-        //    {
-        //        var value = *(bool*)(ptr + offset);
-        //        offset += BoolSize;
-        //        return value;
-        //    }
-        //}
-        //#endregion
+            fixed (byte* ptr = buffer)
+            {
+                var value = *(short*)(ptr + offset);
+                offset += CharSize;
+                return (char)NetworkToHostOrder(value);
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe int ReadInt(byte[] buffer, ref int offset)
+        {
+            if (offset + IntSize > buffer.Length)
+                throw new Exception("xbuffer read out of index");
+
+            fixed (byte* ptr = buffer)
+            {
+                var value = *(int*)(ptr + offset);
+                offset += IntSize;
+                return NetworkToHostOrder(value);
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe uint ReadUInt(byte[] buffer, ref int offset)
+        {
+            if (offset + UIntSize > buffer.Length)
+                throw new Exception("xbuffer read out of index");
+
+            fixed (byte* ptr = buffer)
+            {
+                var value = *(uint*)(ptr + offset);
+                offset += UIntSize;
+                return NetworkToHostOrder(value);
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe short ReadShort(byte[] buffer, ref int offset)
+        {
+            if (offset + ShortSize > buffer.Length)
+                throw new Exception("xbuffer read out of index");
+
+            fixed (byte* ptr = buffer)
+            {
+                var value = *(short*)(ptr + offset);
+                offset += ShortSize;
+                return NetworkToHostOrder(value);
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe ushort ReadUShort(byte[] buffer, ref int offset)
+        {
+            if (offset + UShortSize > buffer.Length)
+                throw new Exception("xbuffer read out of index");
+
+            fixed (byte* ptr = buffer)
+            {
+                var value = *(ushort*)(ptr + offset);
+                offset += UShortSize;
+                return NetworkToHostOrder(value);
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe long ReadLong(byte[] buffer, ref int offset)
+        {
+            if (offset + LongSize > buffer.Length)
+                throw new Exception("xbuffer read out of index");
+
+            fixed (byte* ptr = buffer)
+            {
+                var value = *(long*)(ptr + offset);
+                offset += LongSize;
+                return NetworkToHostOrder(value);
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe ulong ReadULong(byte[] buffer, ref int offset)
+        {
+            if (offset + ULongSize > buffer.Length)
+                throw new Exception("xbuffer read out of index");
+
+            fixed (byte* ptr = buffer)
+            {
+                var value = *(ulong*)(ptr + offset);
+                offset += ULongSize;
+                return NetworkToHostOrder(value);
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe float ReadFloat(byte[] buffer, ref int offset)
+        {
+            if (offset + FloatSize > buffer.Length)
+                throw new Exception("xbuffer read out of index");
+
+            fixed (byte* ptr = buffer)
+            {
+                *(int*)(ptr + offset) = NetworkToHostOrder(*(int*)(ptr + offset));
+                var value = *(float*)(ptr + offset);
+                offset += FloatSize;
+                return value;
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe double ReadDouble(byte[] buffer, ref int offset)
+        {
+            if (offset + DoubleSize > buffer.Length)
+                throw new Exception("xbuffer read out of index");
+
+            fixed (byte* ptr = buffer)
+            {
+                *(long*)(ptr + offset) = NetworkToHostOrder(*(long*)(ptr + offset));
+                var value = *(double*)(ptr + offset);
+                offset += DoubleSize;
+                return value;
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe byte ReadByte(byte[] buffer, ref int offset)
+        {
+            if (offset + ByteSize > buffer.Length)
+                throw new Exception("xbuffer read out of index");
+
+            fixed (byte* ptr = buffer)
+            {
+                var value = *(ptr + offset);
+                offset += ByteSize;
+                return value;
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe byte[] ReadBytes(byte[] buffer, ref int offset)
+        {
+            bool hasVal = ReadBool(buffer, ref offset);
+            if (hasVal)
+            {
+                var len = ReadInt(buffer, ref offset);
+                //数据不可信
+                if (len <= 0 || offset + len > buffer.Length)
+                    return Array.Empty<byte>();
+
+                var data = new byte[len];
+                System.Array.Copy(buffer, offset, data, 0, len);
+                offset += len;
+                return data;
+            }
+            return null;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe sbyte ReadSByte(byte[] buffer, ref int offset)
+        {
+            if (offset + ByteSize > buffer.Length)
+                throw new Exception("xbuffer read out of index");
+
+            fixed (byte* ptr = buffer)
+            {
+                var value = *(sbyte*)(ptr + offset);
+                offset += ByteSize;
+                return value;
+            }
+        }
+
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe string ReadString(byte[] buffer, ref int offset)
+        {
+            bool hasVal = ReadBool(buffer, ref offset);
+            if (hasVal)
+            {
+                var len = ReadInt(buffer, ref offset);
+                //数据不可信
+                if (len <= 0 || offset + len > buffer.Length)
+                    return "";
+                fixed (byte* ptr = buffer)
+                {
+                    var value = System.Text.Encoding.UTF8.GetString(ptr + offset, len);
+                    offset += len;
+                    return value;
+                }
+            }
+            return null;
+        }
+
+        #endregion
 
     }
 }

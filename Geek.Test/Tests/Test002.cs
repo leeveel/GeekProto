@@ -86,11 +86,11 @@ namespace Geek.Test
         {
             ReqLogin t1 = new ReqLogin
             {
-                //UserName = "leeveel",
-                //SdkToken = "fdsafdafdsafdsafdsa",
-                //Platform = "editor",
+                UserName = "leeveel",
+                SdkToken = "fdsafdafdsafdsafdsa",
+                Platform = "editor",
                 SdkType = 213,
-                //Device = "fafdsaf"
+                Device = "fafdsaf"
             };
 
             if (map)
@@ -136,13 +136,21 @@ namespace Geek.Test
             //    t1.Map1.Add(i, i);
             //}
 
-            var b = new byte[t1.GetSerializeLength()];
-            var span = new Span<byte>(b);
+            //var b = new byte[t1.GetSerializeLength()];
+            //var span = new Span<byte>(b);
+            //for (int i = 0; i < count; i++)
+            //{
+            //    t1.Serialize(span);
+            //    ReqLogin t2 = new ReqLogin();
+            //    t2.Deserialize(span);
+            //}
+
+            byte[] b = null;
             for (int i = 0; i < count; i++)
             {
-                t1.Serialize(span);
+                b = t1.Serialize();
                 ReqLogin t2 = new ReqLogin();
-                t2.Deserialize(span);
+                t2.Deserialize(b);
             }
             Console.WriteLine("geekproto length:" + b.Length);
         }
@@ -151,11 +159,11 @@ namespace Geek.Test
         {
             ReqLoginMsgPack t1 = new ReqLoginMsgPack
             {
-                //UserName = "leeveel",
-                //SdkToken = "fdsafdafdsafdsafdsa",
-                //Platform = "editor",
+                UserName = "leeveel",
+                SdkToken = "fdsafdafdsafdsafdsa",
+                Platform = "editor",
                 SdkType = 213,
-                //Device = "fafdsaf"
+                Device = "fafdsaf"
             };
 
             if (map)
@@ -325,6 +333,64 @@ namespace Geek.Test
                 Test5 t2 = new Test5();
                 t2.Deserialize(span);
             }
+
+        }
+
+
+        public void TestAs()
+        {
+            int count = 10000000;
+            List<string> list = new List<string>(count);
+            for (int i = 0; i < count; i++)
+            {
+                list.Add(i.ToString());
+            }
+            AsString<string>(list);
+        }
+
+        public void AsString<T>(List<T> list)
+        {
+            long start = TimeUtils.CurrentTimeMillis();
+            for (int i = 0; i < list.Count; i++)
+            {
+                var str = list[i] as string;
+            }
+            Console.WriteLine($"{TimeUtils.CurrentTimeMillis() - start}:ms");
+
+            start = TimeUtils.CurrentTimeMillis();
+            for (int i = 0; i < list.Count; i++)
+            {
+                var str = (string)(object)list[i];
+            }
+            Console.WriteLine($"{TimeUtils.CurrentTimeMillis() - start}:ms");
+        }
+
+        public void TestSpan()
+        {
+            int count = 100000000;
+            var b = new byte[] { 1, 2, 3, 4 };
+            long start = TimeUtils.CurrentTimeMillis();
+            for (int i = 0; i < count; i++)
+            {
+                T1(b);
+            }
+            Console.WriteLine($"{TimeUtils.CurrentTimeMillis() - start}:ms");
+
+            start = TimeUtils.CurrentTimeMillis();
+            for (int i = 0; i < count; i++)
+            {
+                T2(b);
+            }
+            Console.WriteLine($"{TimeUtils.CurrentTimeMillis() - start}:ms");
+        }
+
+        public void T1(byte[] arr)
+        {
+            
+        }
+
+        public void T2(Span<byte> arr)
+        {
 
         }
 

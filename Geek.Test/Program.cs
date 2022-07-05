@@ -5,11 +5,11 @@
         static void Main(string[] args)
         {
             Console.WriteLine("请按需输入指令:");
-            Console.WriteLine("1.测试序列化");
-            Console.WriteLine("2.性能测试");
-            Console.WriteLine("3.导出协议代码");
-            Console.WriteLine("4.导出Resolver");
-            Console.WriteLine("5.导出工具类");
+            Console.WriteLine("1.测试1");
+            Console.WriteLine("2.测试2");
+            Console.WriteLine("3.测试3");
+            Console.WriteLine("4.测试4");
+            Console.WriteLine("5.测试5");
             Console.WriteLine("-------------------------------------------");
             Test002 test = new Test002();
             while (true)
@@ -22,13 +22,13 @@
                         test.TestPerformance();
                         break;
                     case '2':
-                        test.TestFor();
+                        test.TestSpan();
                         break;
                     case '3':
                         test.TestEnum();
                         break;
                     case '4':
-                        test.GetEnumNames();
+                        test.TestAs();
                         break;
                     case '5':
                         break;

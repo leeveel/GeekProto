@@ -222,7 +222,7 @@ namespace Tool.Logic
                 if (isState)
                     return "StateSetFormatter";
                 else
-                    return "HasSetFormatter";
+                    return "HashSetFormatter";
             }
 
             if (IsCustom(type))

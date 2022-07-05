@@ -19,12 +19,12 @@ namespace Geek.Server
 
         public virtual int Read(byte[] buffer, int offset)
         {
-            return Read(new Span<byte>(buffer), offset);
+            return offset;
         }
 
         public virtual int Write(byte[] buffer, int offset)
         {
-            return Write(new Span<byte>(buffer), offset);
+            return offset;
         }
 
         public virtual int Read(Span<byte> buffer, int offset)

@@ -208,6 +208,106 @@ namespace {{space}}
 			return _offset_;
 		}
 
+		/**********************Byte[]*******************************/
+
+		///<summary>反序列化，读取数据</summary>
+        public override int Read(byte[] _buffer_, int _offset_)
+		{
+			{{~ if msgid != 0 ~}}
+			UniId = XBuffer.ReadInt(_buffer_, ref _offset_);
+			{{~ end ~}}
+			_offset_ = base.Read(_buffer_, _offset_);
+			{{~ if msgid == 0 ~}}
+			int _startOffset_ = _offset_;
+			int _toReadLength_ = XBuffer.ReadInt(_buffer_, ref _offset_);
+			{{~ end ~}}
+			
+			//字段个数,最多支持255个
+			var _fieldNum_ = XBuffer.ReadByte(_buffer_, ref _offset_);
+			
+			{{~ readIdx = -1 ~}}
+			do {
+				{{~ for field in fields ~}}
+				{{~ readIdx = readIdx + 1 ~}}
+				if(_fieldNum_ > {{readIdx}})
+				{
+					{{~ if field.iscollection ~}}   {{~#处理collection~}}
+
+					{{~ if field.isnest ~}}
+					{{field.name}} = ReadCollection<{{field.clsname}}>(_buffer_, ref _offset_);
+					{{~ else ~}}
+					{{field.readcollectioncode}}
+					{{~ end ~}}
+
+					{{~ else if field.iscustom ~}}
+					{{field.name}} = ReadCustom<{{field.clsname}}>({{field.name}}, _buffer_, ref _offset_);
+
+					{{~ else if field.isprimitive ~}}  {{~#primitive字段 ~}}
+					{{field.name}} = {{field.readcode}};
+
+					{{~ end ~}}{{~#end if collection}}
+				}else break;
+				{{~ end ~}}{{~#foreach end fields~}}
+			}while(false);
+			
+			{{~ if msgid == 0 ~}}
+			//剔除多余数据
+			if(_offset_ < _toReadLength_ - _startOffset_)
+				_offset_ += _toReadLength_ - _startOffset_;
+			{{~ end ~}}
+			return _offset_;
+		}
+
+		///<summary>序列化，写入数据</summary>
+        public override int Write(byte[]  _buffer_, int _offset_)
+        {	
+			{{~ if msgid != 0 ~}}
+			XBuffer.WriteInt(UniId, _buffer_, ref _offset_);
+			{{~ end ~}}
+			_offset_ = base.Write(_buffer_, _offset_);
+			{{~ if msgid == 0 ~}}
+			//先写入当前对象长度占位符
+			{{~ #msg不需要,结构体才需要,msg加了字段不影响,消息中只能包含结构体，不能包含其他消息 ~}}
+			int _startOffset_ = _offset_;
+			XBuffer.WriteInt(0, _buffer_, ref _offset_);
+			{{~ end ~}}
+			
+			//写入字段数量,最多支持255个
+			{{~ fieldNum = (fields | array.size) ~}}
+			XBuffer.WriteByte({{fieldNum}}, _buffer_, ref _offset_);
+			{{~ if fieldNum > 255 ~}}
+			throw new System.Exception("单个协议类型最多支持255个字段，当前{{fieldNum}}个");
+			{{~ end ~}}
+			
+			//写入数据
+			{{~ for field in fields ~}}
+
+			{{~ if field.iscollection ~}}
+
+			{{~ if field.isnest ~}}
+			WriteCollection<{{field.clsname}}>({{field.name}}, _buffer_, ref _offset_);
+			{{~ else ~}}
+			{{field.writecollectioncode}}
+			{{~ end ~}}
+
+			{{~ else if field.iscustom ~}}
+			WriteCustom<{{field.clsname}}>({{field.name}}, _buffer_, ref _offset_);
+			
+			{{~ else if field.isprimitive ~}} {{~#primitive字段 ~}}
+			{{ field.writecode }};
+
+			{{~ end ~}}{{~#if field.iscollection ~}}
+			{{~ end ~}}{{~#foreach state.fields~}}
+			
+			{{~ if msgid == 0 ~}}
+			//覆盖当前对象长度
+			XBuffer.WriteInt(_offset_ - _startOffset_, _buffer_, ref _startOffset_);
+			{{~ end ~}}
+			return _offset_;
+		}
+
+
+
 
 		/*********************************************************/
 		public override int GetSerializeLength()

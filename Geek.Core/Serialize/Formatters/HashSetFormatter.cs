@@ -1,16 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Geek.Server
 {
-    public class StateListFormatter<T> : ISerializeFormatter<StateList<T>>
+    public class HashSetFormatter<T> : ISerializeFormatter<HashSet<T>>
     {
-        public StateList<T> Deserialize(Span<byte> buffer, ref int offset)
+        public HashSet<T> Deserialize(Span<byte> buffer, ref int offset)
         {
             var hasVal = XBuffer.ReadBool(buffer, ref offset);
             if (hasVal)
             {
                 var count = XBuffer.ReadInt(buffer, ref offset);
-                var collection = new StateList<T>(count);
+                var collection = new HashSet<T>(count);
                 bool isPrimitive = XBuffer.IsPrimitiveType<T>();
                 ISerializeFormatter<T> formatter = null;
                 for (int i = 0; i < count; i++)
@@ -33,7 +34,7 @@ namespace Geek.Server
             return default;
         }
 
-        public void Serialize(Span<byte> buffer, StateList<T> value, ref int offset)
+        public void Serialize(Span<byte> buffer, HashSet<T> value, ref int offset)
         {
             if (value == null)
             {
@@ -59,14 +60,14 @@ namespace Geek.Server
             }
         }
 
-        public int GetSerializeLength(StateList<T> value)
+        public int GetSerializeLength(HashSet<T> value)
         {
             if (value == null)
                 return XBuffer.BoolSize; //记录是否有值 
 
             int len = XBuffer.BoolSize + XBuffer.IntSize; //count
 
-            if (value.Count <= 0)
+            if(value.Count <= 0)
                 return len;
 
             bool isPrimitive = XBuffer.IsStrictPrimitiveType<T>();
@@ -78,22 +79,21 @@ namespace Geek.Server
             {
                 ISerializeFormatter<T> formatter = null;
                 Type type = typeof(T);
-                int c = value.Count;
-                for (int i = 0; i < c; i++)
+                foreach (var item in value)
                 {
                     if (type == XBuffer.StringType)
                     {
-                        len += XBuffer.GetStringSerializeLength(value[i] as string);
+                        len += XBuffer.GetStringSerializeLength(item as string);
                     }
                     else if (type == XBuffer.ByteArrType)
                     {
-                        len += XBuffer.GetByteArraySerializeLength(value[i] as byte[]);
+                        len += XBuffer.GetByteArraySerializeLength(item as byte[]);
                     }
                     else
                     {
                         if (formatter == null)
                             formatter = SerializerOptions.Resolver.GetFormatter<T>();
-                        len += formatter.GetSerializeLength(value[i]);
+                        len += formatter.GetSerializeLength(item);
                     }
                 }
             }
